@@ -19,99 +19,165 @@ const featuredPubs = PUBLICATIONS.filter((p) => p.featured).slice(0, 6);
 const featuredProjects = PROJECTS.filter((p) => p.featured);
 const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 4);
+  .slice(0, 4)
+  .map((post) => {
+    const firstImg = (post.body ?? '').match(/!\[[^\]]*\]\((\/blog-assets\/[^)]+)\)/)?.[1];
+    return {
+      ...post,
+      thumbnail: post.data.heroImage || firstImg,
+    };
+  });
 ---
 
 <BaseLayout locale={locale}>
-  <div class="space-y-14">
-    <!-- 1. Academic Researcher Profile Header (Clarity / Karpathy Minimal Rhythm) -->
-    <section class="space-y-6 pb-10 border-b border-[var(--border-hairline)]">
-      <div class="space-y-2">
-        <p class="text-xs font-mono text-[var(--accent-primary)]">
-          {SITE.affiliation[locale]}
+  <div class="space-y-16">
+    <!-- 1. Editorial Researcher Profile Header with Subtle Quantum Phase-Space Ornament -->
+    <section class="relative overflow-hidden rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-6 py-8 sm:px-8 sm:py-10">
+      <!-- Whisper-quiet coordinate field fading cleanly into canvas -->
+      <div class="hero-ambient-grid pointer-events-none absolute inset-0" aria-hidden="true" />
+
+      <!-- Minimalist SVG Bloch / damped Rabi hairline motif (desktop only, quiet & subject-grounded) -->
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 240 160"
+        class="pointer-events-none hidden md:block absolute right-6 top-6 w-56 h-36 opacity-55 dark:opacity-45"
+      >
+        <g fill="none" stroke="var(--border-strong)" stroke-width="0.9">
+          <circle cx="176" cy="78" r="46" stroke-dasharray="2.5 3" />
+          <ellipse cx="176" cy="78" rx="46" ry="15" />
+          <line x1="176" y1="22" x2="176" y2="134" />
+          <line x1="122" y1="78" x2="230" y2="78" />
+        </g>
+        <!-- Damped Rabi envelope trace -->
+        <path
+          d="M 10 112 C 32 34, 52 34, 72 104 C 90 48, 108 48, 124 94 C 138 62, 152 62, 176 78"
+          fill="none"
+          stroke="var(--accent-primary)"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+        <circle cx="176" cy="44" r="3.2" fill="var(--accent-primary)" />
+        <line x1="176" y1="78" x2="176" y2="44" stroke="var(--accent-primary)" stroke-width="1.3" />
+        <text x="183" y="39" font-size="9" font-family="var(--font-mono)" fill="var(--text-tertiary)">|ψ(t)⟩</text>
+        <text x="12" y="130" font-size="8.5" font-family="var(--font-mono)" fill="var(--text-tertiary)">Ω · T₁ / T_φ</text>
+      </svg>
+
+      <div class="relative space-y-6">
+        <div class="space-y-2.5">
+          <div class="inline-flex items-center gap-2 rounded-full border border-[var(--border-hairline)] bg-[var(--bg-subtle)] px-3 py-1 text-xs text-[var(--text-secondary)]">
+            <span class="h-1.5 w-1.5 rounded-full bg-[var(--signal-positive)]" />
+            <span>{SITE.affiliation[locale]}</span>
+          </div>
+          <h1 class="text-3xl sm:text-[38px] font-bold tracking-[-0.03em] leading-[1.15] text-[var(--text-primary)]">
+            {isKo ? '박범도' : 'Beomdo Park'}
+            <span class="ml-2.5 text-lg sm:text-xl font-normal tracking-normal text-[var(--text-tertiary)]">
+              {isKo ? 'Beomdo Park' : '박범도'}
+            </span>
+          </h1>
+        </div>
+
+        <p class="text-[15.5px] sm:text-[16px] leading-[1.82] text-[var(--text-secondary)] max-w-[60ch]">
+          {PROFILE.bio[locale]}
         </p>
-        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)]">
-          {isKo ? '박범도' : 'Beomdo Park'}
-          <span class="ml-2 text-lg sm:text-xl font-normal text-[var(--text-tertiary)]">
-            {isKo ? 'Beomdo Park' : '박범도'}
-          </span>
-        </h1>
+
+        <!-- Action & Academic Profile Links -->
+        <div class="flex flex-wrap items-center gap-2 pt-0.5">
+          <a
+            href={getLocalePath(locale, '/publications')}
+            class="inline-flex items-center rounded-full bg-[var(--text-primary)] px-4 py-1.5 text-xs sm:text-[13px] font-medium text-[var(--bg-canvas)] hover:opacity-88 transition-opacity"
+          >
+            {isKo ? `논문 · 특허 (${PUB_STATS.totalPapers})` : `Publications (${PUB_STATS.totalPapers})`}
+          </a>
+          <a
+            href={getLocalePath(locale, '/projects')}
+            class="inline-flex items-center rounded-full border border-[var(--border-strong)] bg-[var(--bg-surface)] px-4 py-1.5 text-xs sm:text-[13px] font-medium text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors"
+          >
+            {isKo ? '프로젝트 · 데모' : 'Projects & Demos'}
+          </a>
+          <a
+            href={getLocalePath(locale, '/cv')}
+            class="inline-flex items-center rounded-full border border-[var(--border-hairline)] bg-[var(--bg-subtle)] px-3.5 py-1.5 text-xs sm:text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors"
+          >
+            {isKo ? '이력서 (CV)' : 'CV'}
+          </a>
+        </div>
+
+        <!-- Inline Academic Profiles & Verified Summary Strip -->
+        <div class="pt-5 border-t border-[var(--border-hairline)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
+            <a href={SITE.links.github} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">GitHub ↗</a>
+            <a href={SITE.links.scholar} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">Scholar ↗</a>
+            <a href={SITE.links.dbpia} target="_blank" rel="noreferrer" class="font-medium text-[var(--accent-primary)] hover:underline">DBpia ↗</a>
+            <a href={SITE.links.orcid} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">ORCID ↗</a>
+            <a href={`mailto:${SITE.email}`} class="font-mono text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">{SITE.email}</a>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11.5px] tabular-nums text-[var(--text-tertiary)]">
+            <span>
+              <strong class="font-semibold text-[var(--text-primary)]">{PUB_STATS.firstAuthor}</strong> {isKo ? '1저자' : '1st-author'}
+            </span>
+            <span>·</span>
+            <span>
+              <strong class="font-semibold text-[var(--text-primary)]">KR</strong> 10-3019388
+            </span>
+            <span>·</span>
+            <span class="text-[var(--signal-positive)] font-medium">0.34 µs QEC</span>
+          </div>
+        </div>
       </div>
-
-      <p class="text-[15.5px] sm:text-base leading-[1.8] text-[var(--text-secondary)] max-w-[68ch]">
-        {PROFILE.bio[locale]}
-      </p>
-
-      <!-- Minimal Text Links (No noisy social icon clutter) -->
-      <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-        <a href={SITE.links.github} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors">
-          GitHub
-        </a>
-        <a href={SITE.links.scholar} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors">
-          Google Scholar
-        </a>
-        <a href={SITE.links.dbpia} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors">
-          DBpia
-        </a>
-        <a href={SITE.links.orcid} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors">
-          ORCID
-        </a>
-        <a href={getLocalePath(locale, '/cv')} class="font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors">
-          {isKo ? '이력서 (CV)' : 'CV'}
-        </a>
-        <a href={`mailto:${SITE.email}`} class="font-mono text-xs text-[var(--text-tertiary)] hover:text-[var(--accent-primary)] transition-colors">
-          {SITE.email}
-        </a>
-      </div>
-
-      <!-- Quiet Single-Line Fact Summary -->
-      <dl class="flex flex-wrap gap-x-8 gap-y-3 pt-2 text-xs text-[var(--text-tertiary)]">
-        <div>
-          <dt class="inline">{isKo ? '논문' : 'Papers'}</dt>
-          <dd class="inline ml-1.5 font-mono font-semibold text-[var(--text-primary)]">
-            {PUB_STATS.totalPapers} ({isKo ? `1저자 ${PUB_STATS.firstAuthor}` : `${PUB_STATS.firstAuthor} 1st`})
-          </dd>
-        </div>
-        <div>
-          <dt class="inline">{isKo ? '등록특허' : 'Patent'}</dt>
-          <dd class="inline ml-1.5 font-mono font-semibold text-[var(--text-primary)]">KR 10-3019388</dd>
-        </div>
-        <div>
-          <dt class="inline">{isKo ? '오픈소스' : 'Open Source'}</dt>
-          <dd class="inline ml-1.5 font-mono font-semibold text-[var(--accent-primary)]">
-            <a href={SITE.links.qenvsPypi} target="_blank" rel="noreferrer" class="hover:underline">qenvs (PyPI)</a>
-          </dd>
-        </div>
-        <div>
-          <dt class="inline">{isKo ? '온칩 QEC' : 'On-Chip QEC'}</dt>
-          <dd class="inline ml-1.5 font-mono font-semibold text-[var(--signal-positive)]">0.34 µs · 26.7 KB</dd>
-        </div>
-      </dl>
     </section>
 
-    <!-- 2. Research Focus (Typographic Rows, Zero Card Noise) -->
+    <!-- 2. Research Focus — Clean 3-Column Monochrome Editorial Grid -->
     <section id="research" class="space-y-5 scroll-mt-20">
-      <h2 class="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{t.researchFocus}</h2>
-      <div class="space-y-5">
-        {PROFILE.researchFocus.map((rf) => (
-          <div class="border-l-2 border-[var(--border-strong)] pl-4 space-y-1">
-            <div class="flex flex-wrap items-baseline justify-between gap-2">
-              <h3 class="text-[15px] font-semibold text-[var(--text-primary)]">
+      <div class="flex items-baseline justify-between gap-4">
+        <h2 class="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{t.researchFocus}</h2>
+        <span class="font-mono text-[11px] text-[var(--text-tertiary)]">3 tracks</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {PROFILE.researchFocus.map((rf, idx) => (
+          <div class="surface-card rounded-xl p-5 flex flex-col justify-between gap-4">
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-subtle)] text-[var(--text-primary)]">
+                  {idx === 0 && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <circle cx="12" cy="12" r="2.2" />
+                      <ellipse cx="12" cy="12" rx="9.5" ry="4" transform="rotate(35 12 12)" />
+                      <ellipse cx="12" cy="12" rx="9.5" ry="4" transform="rotate(-35 12 12)" />
+                    </svg>
+                  )}
+                  {idx === 1 && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <rect x="6" y="6" width="12" height="12" rx="2" />
+                      <path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4" />
+                    </svg>
+                  )}
+                  {idx === 2 && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <polyline points="22 12 18 12 15 20 9 4 6 12 2 12" />
+                    </svg>
+                  )}
+                </span>
+              </div>
+              <h3 class="text-[15px] font-semibold leading-snug text-[var(--text-primary)]">
                 {isKo ? rf.titleKo : rf.titleEn}
               </h3>
-              <span class="font-mono text-[11px] text-[var(--text-tertiary)]">{rf.meta}</span>
+              <p class="text-[13.5px] leading-relaxed text-[var(--text-secondary)]">
+                {isKo ? rf.descKo : rf.descEn}
+              </p>
             </div>
-            <p class="text-sm leading-relaxed text-[var(--text-secondary)] max-w-[70ch]">
-              {isKo ? rf.descKo : rf.descEn}
-            </p>
+            <div class="pt-3 border-t border-[var(--border-hairline)] font-mono text-[11px] text-[var(--text-tertiary)]">
+              {rf.meta}
+            </div>
           </div>
         ))}
       </div>
     </section>
 
-    <!-- 3. Selected Publications & Patent -->
-    <section class="space-y-5">
-      <div class="flex items-baseline justify-between gap-4 border-b border-[var(--border-hairline)] pb-2.5">
+    <!-- 3. Selected Publications & Patent — Crisp 2-Column Academic Alignment -->
+    <section class="space-y-4">
+      <div class="flex items-baseline justify-between gap-4 border-b border-[var(--border-hairline)] pb-3">
         <h2 class="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{t.selectedPubs}</h2>
         <a
           href={getLocalePath(locale, '/publications')}
@@ -125,60 +191,64 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
         {featuredPubs.map((pub) => {
           const href = pub.url || pub.dbpiaUrl;
           return (
-            <li class="py-3.5 space-y-1">
-              <div class="flex flex-wrap items-center gap-2 text-xs">
-                <span class="font-mono font-semibold text-[var(--accent-primary)]">{pub.venueShort}</span>
-                <span class="font-mono text-[var(--text-tertiary)]">{pub.year}</span>
-                {pub.indexing && (
-                  <span class="rounded bg-[var(--bg-subtle)] border border-[var(--border-hairline)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-secondary)]">
-                    {pub.indexing}
-                  </span>
-                )}
-                <span class={pub.isFirstAuthor ? 'font-medium text-[var(--signal-positive)]' : 'text-[var(--text-tertiary)]'}>
-                  {isKo ? pub.roleKo : pub.roleEn}
-                </span>
-                {pub.dbpiaUrl && (
-                  <a
-                    href={pub.dbpiaUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    class="rounded border border-[var(--accent-primary)]/35 bg-[var(--accent-primary-soft)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--accent-primary)] hover:opacity-80"
-                  >
-                    DBpia
-                  </a>
-                )}
-                {pub.url && (
-                  <a
-                    href={pub.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    class="rounded border border-[var(--border-hairline)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                  >
-                    {pub.urlLabel || 'Paper'}
-                  </a>
-                )}
+            <li class="py-4 grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-baseline">
+              <div class="sm:col-span-2 flex sm:flex-col items-baseline gap-2 sm:gap-1">
+                <span class="font-mono text-xs font-semibold text-[var(--accent-primary)]">{pub.venueShort}</span>
+                <span class="font-mono text-[11px] tabular-nums text-[var(--text-tertiary)]">{pub.year}</span>
               </div>
-              <h3 class="text-[14.5px] font-medium leading-snug text-[var(--text-primary)]">
-                {href ? (
-                  <a href={href} target="_blank" rel="noreferrer" class="hover:text-[var(--accent-primary)] transition-colors">
-                    {pub.title}
-                  </a>
-                ) : (
-                  pub.title
-                )}
-              </h3>
-              <p class="text-xs text-[var(--text-tertiary)]">
-                {isKo ? pub.authorsKo : pub.authorsEn}
-              </p>
+
+              <div class="sm:col-span-10 space-y-1.5">
+                <h3 class="text-[14.5px] font-medium leading-snug text-[var(--text-primary)]">
+                  {href ? (
+                    <a href={href} target="_blank" rel="noreferrer" class="hover:text-[var(--accent-primary)] transition-colors">
+                      {pub.title}
+                    </a>
+                  ) : (
+                    pub.title
+                  )}
+                </h3>
+
+                <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs">
+                  <span class="text-[var(--text-tertiary)]">{isKo ? pub.authorsKo : pub.authorsEn}</span>
+                  <span class={pub.isFirstAuthor ? 'font-medium text-[var(--signal-positive)]' : 'text-[var(--text-tertiary)]'}>
+                    · {isKo ? pub.roleKo : pub.roleEn}
+                  </span>
+                  {pub.indexing && (
+                    <span class="rounded bg-[var(--bg-muted)] border border-[var(--border-hairline)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-secondary)]">
+                      {pub.indexing}
+                    </span>
+                  )}
+                  {pub.dbpiaUrl && (
+                    <a
+                      href={pub.dbpiaUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      class="rounded border border-[var(--accent-primary)]/35 bg-[var(--accent-primary-soft)] px-1.5 py-0.5 font-mono text-[10px] font-medium text-[var(--accent-primary)] hover:opacity-80"
+                    >
+                      DBpia ↗
+                    </a>
+                  )}
+                  {pub.url && (
+                    <a
+                      href={pub.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      class="rounded border border-[var(--border-hairline)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)]"
+                    >
+                      {pub.urlLabel || 'Paper'} ↗
+                    </a>
+                  )}
+                </div>
+              </div>
             </li>
           );
         })}
       </ul>
     </section>
 
-    <!-- 4. Selected Engineering Projects -->
+    <!-- 4. Selected Projects — Crisp 2-Column Flagship Pair -->
     <section class="space-y-5">
-      <div class="flex items-baseline justify-between gap-4 border-b border-[var(--border-hairline)] pb-2.5">
+      <div class="flex items-baseline justify-between gap-4 border-b border-[var(--border-hairline)] pb-3">
         <h2 class="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{t.selectedProjects}</h2>
         <a
           href={getLocalePath(locale, '/projects')}
@@ -188,41 +258,47 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
         </a>
       </div>
 
-      <div class="divide-y divide-[var(--border-hairline)]">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         {featuredProjects.map((proj) => (
-          <article class="py-5 first:pt-1 grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-            <div class="md:col-span-4 space-y-1">
-              <div class="flex items-baseline gap-2">
-                <h3 class="text-base font-semibold text-[var(--text-primary)]">
-                  <a href={getLocalePath(locale, `/projects/${proj.slug}`)} class="hover:text-[var(--accent-primary)] transition-colors">
-                    {proj.name}
-                  </a>
-                </h3>
-                <span class="font-mono text-[11px] text-[var(--text-tertiary)]">{proj.period}</span>
-              </div>
-              <p class="text-xs text-[var(--text-tertiary)]">{isKo ? proj.statusKo : proj.statusEn}</p>
-            </div>
-            <div class="md:col-span-8 space-y-2.5">
-              <p class="text-sm leading-relaxed text-[var(--text-secondary)]">
-                {proj.summary[locale]}
-              </p>
-              <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+          <article class="surface-card rounded-xl p-5 flex flex-col justify-between gap-5">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
                 <a
                   href={getLocalePath(locale, `/projects/${proj.slug}`)}
-                  class="font-medium text-[var(--accent-primary)] hover:underline"
+                  class="text-lg font-semibold tracking-tight text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-colors"
                 >
-                  {isKo ? '상세 및 인터랙티브 데모' : 'Case study & interactive demo'} →
+                  {proj.name}
                 </a>
-                {proj.links.slice(0, 2).map((l) => (
-                  <a
-                    href={l.href}
-                    target={l.href.startsWith('http') ? '_blank' : undefined}
-                    rel={l.href.startsWith('http') ? 'noreferrer' : undefined}
-                    class="text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
-                  >
-                    {isKo ? l.labelKo : l.labelEn}
-                  </a>
+                <span class="rounded-full border border-[var(--border-hairline)] bg-[var(--bg-subtle)] px-2.5 py-0.5 font-mono text-[11px] text-[var(--text-tertiary)]">
+                  {proj.period}
+                </span>
+              </div>
+              <p class="text-[13.5px] leading-relaxed text-[var(--text-secondary)]">
+                {proj.summary[locale]}
+              </p>
+            </div>
+
+            <div class="space-y-3.5 pt-3 border-t border-[var(--border-hairline)]">
+              <div class="grid grid-cols-2 gap-2.5">
+                {proj.metrics.slice(0, 2).map((m) => (
+                  <div class="rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-hairline)] px-3 py-2">
+                    <div class="text-[11px] text-[var(--text-tertiary)]">{isKo ? m.labelKo : m.labelEn}</div>
+                    <div class="mt-0.5 font-mono text-xs sm:text-[13px] font-semibold tabular-nums text-[var(--text-primary)]">
+                      {m.value}
+                    </div>
+                  </div>
                 ))}
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-mono text-[11px] text-[var(--text-tertiary)]">
+                  {proj.stack.slice(0, 3).join(' · ')}
+                </span>
+                <a
+                  href={getLocalePath(locale, `/projects/${proj.slug}`)}
+                  class="font-medium text-[var(--accent-primary)] hover:underline shrink-0"
+                >
+                  {isKo ? '상세 & 데모 →' : 'Case study & demo →'}
+                </a>
               </div>
             </div>
           </article>
@@ -230,11 +306,11 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
       </div>
     </section>
 
-    <!-- 5. Clearly Separated Blog Box -->
-    <section class="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-subtle)]/65 p-5 sm:p-6 space-y-4">
-      <div class="flex flex-wrap items-baseline justify-between gap-2">
+    <!-- 5. Clearly Separated Blog Inset Strip (with Mini Thumbnails) -->
+    <section class="rounded-2xl border border-[var(--border-hairline)] bg-[var(--bg-subtle)] p-5 sm:p-6 space-y-4">
+      <div class="flex flex-wrap items-baseline justify-between gap-2 pb-1">
         <div>
-          <h2 class="text-base font-semibold text-[var(--text-primary)]">{t.recentWriting}</h2>
+          <h2 class="text-base font-semibold tracking-tight text-[var(--text-primary)]">{t.recentWriting}</h2>
           <p class="text-xs text-[var(--text-tertiary)] mt-0.5">{t.recentWritingDesc}</p>
         </div>
         <a
@@ -247,14 +323,35 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
 
       <ul class="divide-y divide-[var(--border-hairline)]">
         {recentPosts.map((post) => (
-          <li class="py-2.5 first:pt-0 last:pb-0">
-            <a href={`/blog/${post.id}`} class="group flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
-              <time datetime={post.data.pubDate.toISOString()} class="font-mono text-xs tabular-nums text-[var(--text-tertiary)] shrink-0">
-                {post.data.pubDate.toISOString().slice(0, 10)}
-              </time>
-              <span class="text-sm text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
-                {post.data.title}
-              </span>
+          <li class="py-3 first:pt-1 last:pb-0">
+            <a href={`/blog/${post.id}`} class="group flex items-center justify-between gap-4">
+              <div class="min-w-0 flex-1 space-y-1">
+                <div class="flex items-center gap-2 font-mono text-[11px] text-[var(--text-tertiary)]">
+                  <time datetime={post.data.pubDate.toISOString()} class="tabular-nums">
+                    {post.data.pubDate.toISOString().slice(0, 10)}
+                  </time>
+                  {post.data.series && (
+                    <span class="rounded bg-[var(--accent-primary-soft)] px-1.5 py-0.5 text-[10px] text-[var(--accent-primary)]">
+                      {post.data.series}{post.data.seriesOrder ? ` #${post.data.seriesOrder}` : ''}
+                    </span>
+                  )}
+                </div>
+                <div class="text-sm font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors truncate">
+                  {post.data.title}
+                </div>
+              </div>
+
+              {post.thumbnail && (
+                <div class="hidden sm:block shrink-0 w-16 h-11 overflow-hidden rounded-md border border-[var(--border-hairline)] bg-white p-1">
+                  <img
+                    src={post.thumbnail}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    class="h-full w-full object-contain"
+                  />
+                </div>
+              )}
             </a>
           </li>
         ))}

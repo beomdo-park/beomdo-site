@@ -36,6 +36,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
   pubDate={post.data.pubDate}
   includeKatex={true}
 >
+  <div id="reading-progress" aria-hidden="true"></div>
   <article>
     <header class="pb-7 border-b border-[var(--border-hairline)] space-y-3.5">
       <div class="flex flex-wrap items-center gap-2 text-xs font-mono text-[var(--text-tertiary)]">
@@ -119,7 +120,8 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
                 <li class={h.depth === 3 ? 'pl-3' : ''}>
                   <a
                     href={`#${h.slug}`}
-                    class="block text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors leading-snug"
+                    data-toc-slug={h.slug}
+                    class="toc-link block text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors leading-snug"
                   >
                     {h.text}
                   </a>
@@ -139,7 +141,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
         {prevPost && (
           <a
             href={`/blog/${prevPost.id}`}
-            class="block rounded-lg border border-[var(--border-hairline)] p-4 hover:border-[var(--border-strong)] transition-colors"
+            class="surface-card block rounded-xl p-4"
           >
             <div class="text-xs text-[var(--text-tertiary)]">이전 글</div>
             <div class="mt-1 font-medium text-[var(--text-primary)] line-clamp-2">{prevPost.data.title}</div>
@@ -150,7 +152,7 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
         {nextPost && (
           <a
             href={`/blog/${nextPost.id}`}
-            class="block rounded-lg border border-[var(--border-hairline)] p-4 text-right hover:border-[var(--border-strong)] transition-colors"
+            class="surface-card block rounded-xl p-4 text-right"
           >
             <div class="text-xs text-[var(--text-tertiary)]">다음 글</div>
             <div class="mt-1 font-medium text-[var(--text-primary)] line-clamp-2">{nextPost.data.title}</div>
@@ -159,4 +161,68 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
       </div>
     </nav>
   </article>
+
+  <script is:inline>
+    // 1. Reading progress bar
+    const bar = document.getElementById('reading-progress');
+    if (bar) {
+      const updateBar = () => {
+        const doc = document.documentElement;
+        const max = doc.scrollHeight - window.innerHeight;
+        const pct = max > 0 ? Math.min(100, Math.max(0, (window.scrollY / max) * 100)) : 0;
+        bar.style.width = `${pct.toFixed(1)}%`;
+      };
+      window.addEventListener('scroll', updateBar, { passive: true });
+      updateBar();
+    }
+
+    // 2. Code block one-click copy buttons
+    document.querySelectorAll('.prose pre.astro-code').forEach((pre) => {
+      if (pre.parentElement?.classList.contains('code-block-wrap')) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'code-block-wrap';
+      pre.parentNode?.insertBefore(wrap, pre);
+      wrap.appendChild(pre);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'code-copy-btn';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', async () => {
+        const code = pre.querySelector('code')?.textContent || pre.textContent || '';
+        try {
+          await navigator.clipboard.writeText(code);
+          btn.textContent = 'Copied';
+          btn.dataset.copied = 'true';
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            delete btn.dataset.copied;
+          }, 1600);
+        } catch {
+          btn.textContent = 'Failed';
+        }
+      });
+      wrap.appendChild(btn);
+    });
+
+    // 3. Active TOC heading highlight
+    const tocLinks = Array.from(document.querySelectorAll('.toc-link'));
+    if (tocLinks.length > 0 && 'IntersectionObserver' in window) {
+      const map = new Map(tocLinks.map((a) => [a.getAttribute('data-toc-slug'), a]));
+      const headings = Array.from(document.querySelectorAll('.prose h2[id], .prose h3[id]'));
+      const obs = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              tocLinks.forEach((a) => delete a.dataset.active);
+              const link = map.get(e.target.id);
+              if (link) link.dataset.active = 'true';
+            }
+          }
+        },
+        { rootMargin: '-80px 0px -70% 0px' }
+      );
+      headings.forEach((h) => obs.observe(h));
+    }
+  </script>
 </BaseLayout>

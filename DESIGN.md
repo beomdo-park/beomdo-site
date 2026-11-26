@@ -96,9 +96,11 @@ rounded:
 - **CJK 타이포그래피 필수 규칙**: 한국어 본문과 제목에는 반드시 `word-break: keep-all; overflow-wrap: break-word;`를 적용해 한글 단어가 어절 중간에서 끊기지 않게 합니다.
 
 ## 4. Component & Layout Rules
-- **Hairline Lists over Card Soup**: 논문, 경력, 수상, 블로그 목록은 반복적인 둥근 카드 박스 대신 `1px solid var(--border-hairline)` 수평 구분선 리스트를 사용합니다.
-- **Navigation Pills**: 헤더 활성 메뉴는 `rounded-full` 소프트 필(`#F5F5F5` / 다크 `#171717`) + 진한 잉크 텍스트로 표시합니다.
-- **Inline Artifact Pills**: 논문·프로젝트의 외부 링크(`[DBpia]`, `[IEEE T-QE]`, `[BibTeX]`)는 높이 `22px`, `font-mono 11px`, `rounded-sm` 1px 보더 필로 통일합니다.
+- **Hero Framing**: 홈 프로필 헤더는 `rounded-2xl` 1px 보더 패널 위에 방사형으로 사라지는 미세 도트 그리드(`.hero-ambient-grid`)와 우측 상단 미니멀 Bloch/Rabi 1px SVG 모티프만 절제해 사용합니다.
+- **Hairline Lists & Studio Surfaces**: 논문(2컬럼 정렬: 좌측 학회·연도 / 우측 제목·저자·인라인 필), 경력, 수상, 블로그 목록은 `1px solid var(--border-hairline)` 수평 구분선으로 정리하며, 3열 연구 분야와 2열 대표 프로젝트에만 1px 미세 호버(`.surface-card`)를 적용합니다.
+- **Navigation Pills**: 헤더 활성 메뉴와 `KO | EN` 토글은 `rounded-full` 소프트 필(`#F4F4F5` / 다크 `#1C1C20`) + 진한 잉크 텍스트로 표시합니다.
+- **Inline Artifact Pills**: 논문·프로젝트의 외부 링크(`[DBpia ↗]`, `[IEEE T-QE ↗]`, `[BibTeX 복사]`)는 `font-mono 10–11px`, `rounded` 1px 보더 필로 통일합니다.
+- **Blog Reading Micro-Interactions**: 글 본문 상단 `2px` 읽기 진행 바(`#reading-progress`), 모든 코드 블록 우측 상단 원클릭 복사 버튼(`Copy` → `Copied`), 데스크톱 우측 목차(`TOC`) 현재 섹션 자동 하이라이트를 제공합니다.
 - **Interactive Telemetry**: QEnvS·ROQET 탐색기 내부 차트만 `lab-grid-bg` 도트 그리드와 수치 데이터 컬러(`link`, `positive`, `warning`, `negative`)를 허용합니다.
 
 ## 5. Do's & Don'ts

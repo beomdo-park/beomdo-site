@@ -11,38 +11,40 @@
   --bg-canvas: #FFFFFF;
   --bg-surface: #FFFFFF;
   --bg-subtle: #FAFAFA;
-  --bg-muted: #F5F5F5;
-  --border-hairline: #EBEBEB;
-  --border-strong: #D4D4D4;
-  --text-primary: #171717;
-  --text-secondary: #4D4D4D;
-  --text-tertiary: #666666;
+  --bg-muted: #F4F4F5;
+  --border-hairline: #EAEAEA;
+  --border-strong: #D4D4D8;
+  --text-primary: #111111;
+  --text-secondary: #52525B;
+  --text-tertiary: #71717A;
   --accent-primary: #0070F3;
   --accent-primary-soft: rgba(0, 112, 243, 0.08);
   --accent-secondary: #5B4FE9;
   --signal-positive: #0D7A5F;
   --signal-warn: #B45309;
   --signal-negative: #D92D20;
-  --grid-dot: rgba(23, 23, 23, 0.07);
+  --grid-dot: rgba(17, 17, 17, 0.09);
+  --shadow-hairline: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .dark {
-  --bg-canvas: #0A0A0A;
-  --bg-surface: #111111;
-  --bg-subtle: #141414;
-  --bg-muted: #1A1A1A;
-  --border-hairline: #242424;
-  --border-strong: #363636;
-  --text-primary: #EDEDED;
-  --text-secondary: #A1A1A1;
-  --text-tertiary: #737373;
-  --accent-primary: #3291FF;
-  --accent-primary-soft: rgba(50, 145, 255, 0.14);
+  --bg-canvas: #09090B;
+  --bg-surface: #111113;
+  --bg-subtle: #151518;
+  --bg-muted: #1C1C20;
+  --border-hairline: #232329;
+  --border-strong: #35353F;
+  --text-primary: #F4F4F5;
+  --text-secondary: #A1A1AA;
+  --text-tertiary: #71717A;
+  --accent-primary: #3B9EFF;
+  --accent-primary-soft: rgba(59, 158, 255, 0.14);
   --accent-secondary: #818CF8;
   --signal-positive: #34D399;
   --signal-warn: #F5A623;
   --signal-negative: #FF5C5C;
-  --grid-dot: rgba(237, 237, 237, 0.07);
+  --grid-dot: rgba(244, 244, 245, 0.08);
+  --shadow-hairline: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 @theme inline {
@@ -94,10 +96,91 @@
   background-size: 18px 18px;
 }
 
-/* Dual-theme Shiki syntax highlighting */
+/* Whisper-quiet radial dot backdrop for hero header */
+.hero-ambient-grid {
+  background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+  background-size: 20px 20px;
+  mask-image: radial-gradient(ellipse 75% 85% at 75% 25%, #000 0%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 75% 85% at 75% 25%, #000 0%, transparent 78%);
+}
+
+/* Subtle single-pass page settle animation */
+@keyframes pageSettle {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main#main-content {
+  animation: pageSettle 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Hairline studio surface hover */
+.surface-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-hairline);
+  box-shadow: var(--shadow-hairline);
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.surface-card:hover {
+  border-color: var(--border-strong);
+}
+
+/* Dual-theme Shiki syntax highlighting + code copy wrapper */
+.code-block-wrap {
+  position: relative;
+  margin: 1.25rem 0;
+}
+
+.code-block-wrap > pre.astro-code {
+  margin: 0 !important;
+}
+
+.code-copy-btn {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-hairline);
+  background-color: var(--bg-surface);
+  padding: 0.22rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.code-block-wrap:hover .code-copy-btn,
+.code-copy-btn:focus-visible,
+.code-copy-btn[data-copied="true"] {
+  opacity: 1;
+}
+
+.code-copy-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.code-copy-btn[data-copied="true"] {
+  color: var(--signal-positive);
+  border-color: var(--signal-positive);
+}
+
 .astro-code {
   border: 1px solid var(--border-hairline);
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
   padding: 1rem 1.125rem;
   font-size: 0.83rem;
   line-height: 1.65;
@@ -109,6 +192,25 @@ html.dark .astro-code,
 html.dark .astro-code span {
   color: var(--shiki-dark) !important;
   background-color: var(--bg-subtle) !important;
+}
+
+/* Reading progress bar on blog articles */
+#reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: var(--accent-primary);
+  z-index: 60;
+  pointer-events: none;
+  transition: width 60ms linear;
+}
+
+/* Active TOC link */
+.toc-link[data-active="true"] {
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 /* Prose refinement */
@@ -128,7 +230,7 @@ html.dark .astro-code span {
   --tw-prose-th-borders: var(--border-strong);
   --tw-prose-td-borders: var(--border-hairline);
   max-width: 70ch;
-  line-height: 1.82;
+  line-height: 1.84;
 }
 
 .prose :where(h2, h3, h4) {
@@ -216,6 +318,7 @@ html.dark .astro-code span {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  main#main-content { animation: none; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
