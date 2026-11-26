@@ -1,26 +1,53 @@
-name: Deploy to Cloudflare Workers
+name: CI & Deploy to Cloudflare Workers
 
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 10
-      - uses: actions/setup-node@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - name: Deploy Worker + Static Assets
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck (astro check)
+        run: pnpm check
+
+      - name: Build static assets, Worker & Pagefind index
+        run: pnpm build
+
+      - name: Notice if CLOUDFLARE_API_TOKEN is not configured
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && env.HAS_CF_TOKEN != 'true'
+        run: |
+          echo "::notice title=Cloudflare API Token Required::CLOUDFLARE_API_TOKEN 시크릿이 아직 등록되지 않아 빌드 검증만 완료했습니다. gh secret set CLOUDFLARE_API_TOKEN -R beomdo-park/beomdo-site 실행 후 자동 배포가 활성화됩니다."
+
+      - name: Deploy to Cloudflare Workers
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && env.HAS_CF_TOKEN == 'true'
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID || '827d88bcb84d1caf2131854335c60ced' }}
