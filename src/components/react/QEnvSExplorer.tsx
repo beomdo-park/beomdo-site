@@ -246,7 +246,7 @@ export default function QEnvSExplorer() {
                       </text>
                     );
                   })}
-                  <text x="516" y="242" fontSize="10" fill="var(--text-tertiary)" fontFamily="var(--font-mono)">
+                  <text x="570" y="242" textAnchor="end" fontSize="10" fill="var(--text-tertiary)" fontFamily="var(--font-mono)">
                     Time t (a.u.)
                   </text>
 
