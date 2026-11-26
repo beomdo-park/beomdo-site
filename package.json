@@ -11,7 +11,8 @@
     "ship": "pnpm deploy && git push",
     "check": "astro check",
     "new:post": "node scripts/new-post.mjs",
-    "qmd:publish": "python3 scripts/publish-qmd.py"
+    "qmd:publish": "python3 scripts/publish-qmd.py",
+    "publish:post": "node scripts/publish-post.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.0",

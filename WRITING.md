@@ -1,50 +1,63 @@
-# 글쓰기 & 발행 가이드 (Writing Workflow)
+# 글쓰기 & 콘텐츠 관리 가이드 (Writing Workflow)
 
-이 블로그는 **일반 Markdown 글**과 **Python 코드 실행이 필요한 Quarto(`.qmd`) 실험 노트** 두 가지 방식을 모두 지원합니다.
+이 저장소는 **일반 Markdown 글**과 **Python 코드 실행·그래프 생성이 필요한 Quarto(`.qmd`) 실험 노트** 두 가지를 모두 원클릭으로 발행할 수 있게 구성되어 있습니다.
 
 ---
 
-## 방식 1: 일반 Markdown 글 (가장 빠름)
+## 1. 일반 Markdown 글쓰기 (가장 빠름)
 
-### 1) 새 글 스캐폴딩
 ```bash
-pnpm new:post my-topic --title "글 제목" --tags "QEC,JAX" --series "ROQET"
-```
-- `src/content/blog/my-topic.md` (오늘 KST 날짜·frontmatter 포함)와 `public/blog-assets/my-topic/` 폴더가 자동 생성됩니다.
+# 1) 새 글 + 이미지 폴더 자동 생성 (KST 오늘 날짜 자동 입력)
+pnpm new:post qenvs-drag-pulse --title "QEnvS로 Transmon DRAG 펄스 최적화하기" --tags "QEnvS,JAX"
 
-### 2) 지원 문법
-- **LaTeX 수식**: `$E = mc^2$`, `$$ ... $$` (KaTeX 빌드타임 렌더링)
-- **콜아웃 박스** (GitHub / Obsidian 표준 문법 그대로 지원):
+# 2) src/content/blog/qenvs-drag-pulse.md 작성 (이미지는 public/blog-assets/qenvs-drag-pulse/ 에 저장)
+#    로컬 미리보기: pnpm dev
+
+# 3) 이미지 누락 검사 + astro check + 커밋 + 푸시 → Cloudflare 자동 배포!
+pnpm publish:post qenvs-drag-pulse
+```
+
+### 지원하는 Markdown 확장 문법
+- **LaTeX 수식**: 인라인 `$H = \frac{\Omega}{2}\sigma_x$`, 블록 `$$ ... $$` (KaTeX 빌드타임 렌더링)
+- **콜아웃 박스** (GitHub · Obsidian 표준 문법 그대로 지원):
   ```markdown
-  > [!NOTE] 제목
-  > 참고할 내용을 적습니다. (`NOTE`, `TIP`, `WARNING`, `IMPORTANT`, `CAUTION` 지원)
+  > [!NOTE] 핵심 요약
+  > `NOTE`, `TIP`, `WARNING`, `IMPORTANT`, `CAUTION` 모두 지원합니다.
   ```
-- **이미지 & 자동 썸네일**: `public/blog-assets/<slug>/fig1.png`에 넣고 `![설명](/blog-assets/<slug>/fig1.png)`로 삽입하면 블로그 목록 우측 썸네일로도 자동 표시됩니다.
+- **자동 썸네일**: frontmatter에 `heroImage`를 지정하거나, 본문에 `/blog-assets/<slug>/...` 이미지를 넣으면 첫 번째 이미지가 블로그 목록 우측 썸네일로 자동 표시됩니다(`object-contain`).
+- **시리즈 묶기**: frontmatter에 `series: "ROQET"`, `seriesOrder: 9`를 넣으면 시리즈 필터와 본문 상단 시리즈 목차가 자동 생성됩니다.
 - **코드 블록**: Shiki 다크/라이트 자동 테마 + 우측 상단 원클릭 `Copy` 버튼 자동 생성.
 
-### 3) 발행 (자동 배포!)
+---
+
+## 2. Python 실행 & 그래프 생성이 필요한 실험 글 (Quarto 연동)
+
+예전처럼 ` ```{python} ` 셀을 실행해서 출력과 `matplotlib` 그래프를 자동으로 넣고 싶을 때 사용합니다.
+
 ```bash
-git add . && git commit -m "post: my-topic" && git push
+# 1) Quarto 초안 생성 (drafts/ 폴더는 .gitignore 처리되어 저장소를 어지럽히지 않음)
+pnpm new:post stim-exp --title "Stim 신드롬 실험" --tags "QEC,Stim" --qmd
+
+# 2) drafts/stim-exp/index.qmd 에 Python 셀, 수식, ::: {.callout-note} 작성
+
+# 3) 로컬 Quarto로 실행·렌더링 → src/content/blog/stim-exp.md + public/blog-assets/stim-exp/ 로 자동 변환
+pnpm qmd:publish drafts/stim-exp/index.qmd
+
+# 4) 검증 + 커밋 + 푸시 → Cloudflare 자동 배포!
+pnpm publish:post stim-exp
 ```
-→ `main` 푸시 후 약 1분 안에 Cloudflare Workers가 자동 빌드·배포합니다.
+
+> 이미 렌더링된 HTML을 재사용하려면 `pnpm qmd:publish drafts/stim-exp/index.qmd --no-render` 옵션을 사용할 수 있습니다.
 
 ---
 
-## 방식 2: Python 실행 & 그래프 생성이 필요한 글 (Quarto 연동)
+## 3. 논문 · 프로젝트 · 이력 업데이트
 
-Astro 자체는 Python을 실행하지 않지만, 로컬에 설치된 **Quarto**로 실행·렌더링한 뒤 Astro 블로그로 원클릭 변환하는 파이프라인이 내장되어 있습니다.
+| 바꾸고 싶은 항목 | 수정 파일 |
+| --- | --- |
+| 논문·특허 추가 (DBpia 링크, BibTeX) | `src/data/publications.ts` |
+| 프로젝트 추가/지표 수정 | `src/data/projects.ts` |
+| 소개 문구, 학력, 경력, 수상, 스택 | `src/data/profile.ts` |
+| 디자인 색상·타이포그래피 원칙 확인 | `DESIGN.md` |
 
-```bash
-# 1) Quarto 초안 생성 (drafts/ 폴더는 .gitignore 처리됨)
-pnpm new:post stim-exp --title "Stim 신드롬 실험" --tags "QEC,Stim" --qmd
-
-# 2) drafts/stim-exp/index.qmd 에 ```{python} 셀과 matplotlib 그래프 작성
-
-# 3) Quarto 실행 → 코드·stdout 출력·플롯 이미지·수식·콜아웃 자동 변환
-pnpm qmd:publish drafts/stim-exp/index.qmd
-
-# 4) 푸시하면 자동 배포 완료!
-git add src/content/blog/stim-exp.md public/blog-assets/stim-exp
-git commit -m "post: stim-exp"
-git push
-```
+수정 후 `pnpm check`로 확인하고 `git push origin main` 하면 약 1분 안에 라이브 사이트에 자동 반영됩니다.
