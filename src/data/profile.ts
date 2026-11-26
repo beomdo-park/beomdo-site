@@ -1,7 +1,7 @@
 export const PROFILE = {
   bio: {
-    ko: '국립한밭대학교 컴퓨터공학과 Eco AI Lab 학부연구생(전 랩장)입니다. 개방 양자계의 강화학습 제어(양자 배터리)와 초전도 표면 부호를 위한 1 µs 이내 온칩 신경망 QEC 디코더를 연구하며, 물리 검증 양자 제어 오픈소스 라이브러리 QEnvS를 개발·유지보수하고 있습니다.',
-    en: 'Undergraduate researcher (former Lab Lead) at Eco AI Lab, Dept. of Computer Engineering, Hanbat National University. I work on reinforcement learning for open quantum control (quantum batteries) and sub-microsecond hardware-aware neural decoders for surface-code QEC, and I maintain the open-source QEnvS library.',
+    ko: '국립한밭대학교 컴퓨터공학과 Eco AI Lab 학부연구생입니다. 개방 양자계의 강화학습 제어(양자 배터리)와 초전도 표면 부호를 위한 1 µs 이내 온칩 신경망 QEC 디코더를 연구하며, 물리 검증 양자 제어 오픈소스 라이브러리 QEnvS를 개발·유지보수하고 있습니다.',
+    en: 'Undergraduate researcher at Eco AI Lab, Dept. of Computer Engineering, Hanbat National University. I work on reinforcement learning for open quantum control (quantum batteries) and sub-microsecond hardware-aware neural decoders for surface-code QEC, and I maintain the open-source QEnvS library.',
   },
   researchFocus: [
     {
