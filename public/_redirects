@@ -6,6 +6,10 @@
 /research/ /#research 301
 /lab /projects/qenvs/ 301
 /lab/ /projects/qenvs/ 301
+/guestbook / 301
+/guestbook/ / 301
+/en/guestbook /en/ 301
+/en/guestbook/ /en/ 301
 /index.html / 301
 /posts/:slug/index.html /blog/:slug/ 301
 /posts/:slug/ /blog/:slug/ 301

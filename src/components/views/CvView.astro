@@ -132,16 +132,16 @@ const isKo = locale === 'ko';
       </dl>
     </section>
 
-    <!-- Guestbook CTA -->
+    <!-- Contact CTA -->
     <section class="pt-4 border-t border-[var(--border-hairline)] flex flex-wrap items-center justify-between gap-3 text-sm">
       <p class="text-[var(--text-secondary)]">
-        {isKo ? '연구 협업, 대학원·채용 문의, 또는 가벼운 인사는 이메일이나 방명록으로 남겨주세요.' : 'For research collaborations, inquiries, or feedback, reach out via email or the guestbook.'}
+        {isKo ? '연구 협업이나 대학원·채용 관련 문의는 이메일로 편하게 연락 주세요.' : 'For research collaborations or inquiries, feel free to reach out via email.'}
       </p>
       <a
-        href={getLocalePath(locale, '/guestbook')}
-        class="rounded-md border border-[var(--border-strong)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"
+        href={`mailto:${SITE.email}`}
+        class="rounded-md border border-[var(--border-strong)] px-3 py-1.5 font-mono text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]"
       >
-        {isKo ? '방명록 남기기 →' : 'Sign Guestbook →'}
+        {SITE.email}
       </a>
     </section>
   </div>
