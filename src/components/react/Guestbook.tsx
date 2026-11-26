@@ -39,7 +39,7 @@ export default function Guestbook() {
     fetchEntries();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setNotice(null);
     setError(null);
