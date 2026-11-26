@@ -6,6 +6,7 @@ import cloudflare from '@astrojs/cloudflare';
 import tailwindcss from '@tailwindcss/vite';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import remarkCallouts from './src/plugins/remark-callouts.mjs';
 
 const SITE_URL = process.env.SITE_URL || 'https://beomdo-site.pbeomdo.workers.dev';
 
@@ -21,7 +22,7 @@ export default defineConfig({
   integrations: [
     react(),
     mdx({
-      remarkPlugins: [remarkMath],
+      remarkPlugins: [remarkMath, remarkCallouts],
       rehypePlugins: [[rehypeKatex, { strict: false }]],
     }),
     sitemap({
@@ -29,7 +30,7 @@ export default defineConfig({
     }),
   ],
   markdown: {
-    remarkPlugins: [remarkMath],
+    remarkPlugins: [remarkMath, remarkCallouts],
     rehypePlugins: [[rehypeKatex, { strict: false }]],
     shikiConfig: {
       themes: {

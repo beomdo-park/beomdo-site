@@ -9,7 +9,9 @@
     "preview": "wrangler dev",
     "deploy": "pnpm check && pnpm build && wrangler deploy",
     "ship": "pnpm deploy && git push",
-    "check": "astro check"
+    "check": "astro check",
+    "new:post": "node scripts/new-post.mjs",
+    "qmd:publish": "python3 scripts/publish-qmd.py"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^12.6.0",
