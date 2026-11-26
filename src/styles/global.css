@@ -3,46 +3,51 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Crisp Academic Clarity Palette — Clean Archival Light default + Mineral Dark mode */
+/*
+ * Design Tokens — synchronized with ./DESIGN.md
+ * Monochrome-first precision (Vercel-inspired) + CJK Academic Clarity
+ */
 :root {
   --bg-canvas: #FFFFFF;
   --bg-surface: #FFFFFF;
-  --bg-subtle: #F6F8FA;
-  --border-hairline: #E5E7EB;
-  --border-strong: #CBD5E1;
-  --text-primary: #111827;
-  --text-secondary: #4B5563;
-  --text-tertiary: #6B7280;
-  --accent-primary: #0369A1;
-  --accent-primary-soft: rgba(3, 105, 161, 0.08);
-  --accent-secondary: #4338CA;
-  --signal-positive: #047857;
+  --bg-subtle: #FAFAFA;
+  --bg-muted: #F5F5F5;
+  --border-hairline: #EBEBEB;
+  --border-strong: #D4D4D4;
+  --text-primary: #171717;
+  --text-secondary: #4D4D4D;
+  --text-tertiary: #666666;
+  --accent-primary: #0070F3;
+  --accent-primary-soft: rgba(0, 112, 243, 0.08);
+  --accent-secondary: #5B4FE9;
+  --signal-positive: #0D7A5F;
   --signal-warn: #B45309;
-  --signal-negative: #B91C1C;
-  --grid-dot: rgba(17, 24, 39, 0.06);
+  --signal-negative: #D92D20;
+  --grid-dot: rgba(23, 23, 23, 0.07);
 }
 
 .dark {
-  --bg-canvas: #0B0E14;
-  --bg-surface: #111622;
-  --bg-subtle: #161D2B;
-  --border-hairline: #232C3E;
-  --border-strong: #334155;
-  --text-primary: #F1F5F9;
-  --text-secondary: #9CA8BC;
-  --text-tertiary: #73819A;
-  --accent-primary: #38BDF8;
-  --accent-primary-soft: rgba(56, 189, 248, 0.12);
+  --bg-canvas: #0A0A0A;
+  --bg-surface: #111111;
+  --bg-subtle: #141414;
+  --bg-muted: #1A1A1A;
+  --border-hairline: #242424;
+  --border-strong: #363636;
+  --text-primary: #EDEDED;
+  --text-secondary: #A1A1A1;
+  --text-tertiary: #737373;
+  --accent-primary: #3291FF;
+  --accent-primary-soft: rgba(50, 145, 255, 0.14);
   --accent-secondary: #818CF8;
   --signal-positive: #34D399;
-  --signal-warn: #F59E0B;
-  --signal-negative: #F87171;
-  --grid-dot: rgba(241, 245, 249, 0.06);
+  --signal-warn: #F5A623;
+  --signal-negative: #FF5C5C;
+  --grid-dot: rgba(237, 237, 237, 0.07);
 }
 
 @theme inline {
-  --font-sans: "Pretendard Variable", "Pretendard", "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: "Pretendard Variable", "Pretendard", "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @layer base {
@@ -53,6 +58,13 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* CJK typography rule: prevent mid-word Korean line breaks */
+  html[lang="ko"] body {
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 
   body {
@@ -64,6 +76,7 @@
 
   code, pre, kbd, samp, .font-mono {
     font-family: var(--font-mono);
+    word-break: normal;
   }
 
   :focus-visible {
@@ -86,7 +99,7 @@
   border: 1px solid var(--border-hairline);
   border-radius: 0.5rem;
   padding: 1rem 1.125rem;
-  font-size: 0.84rem;
+  font-size: 0.83rem;
   line-height: 1.65;
   overflow-x: auto;
   background-color: var(--bg-subtle) !important;
@@ -109,12 +122,12 @@ html.dark .astro-code span {
   --tw-prose-bullets: var(--border-strong);
   --tw-prose-hr: var(--border-hairline);
   --tw-prose-quotes: var(--text-secondary);
-  --tw-prose-quote-borders: var(--accent-primary);
+  --tw-prose-quote-borders: var(--text-primary);
   --tw-prose-captions: var(--text-tertiary);
   --tw-prose-code: var(--text-primary);
   --tw-prose-th-borders: var(--border-strong);
   --tw-prose-td-borders: var(--border-hairline);
-  max-width: 72ch;
+  max-width: 70ch;
   line-height: 1.82;
 }
 
@@ -124,7 +137,7 @@ html.dark .astro-code span {
 }
 
 .prose :where(code):not(:where(pre code)) {
-  background-color: var(--bg-subtle);
+  background-color: var(--bg-muted);
   border: 1px solid var(--border-hairline);
   border-radius: 0.25rem;
   padding: 0.1rem 0.35rem;
@@ -142,7 +155,7 @@ html.dark .astro-code span {
   overflow-x: auto;
   width: max-content;
   max-width: 100%;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .prose th {
@@ -172,7 +185,7 @@ html.dark .astro-code span {
 .callout {
   margin: 1.5rem 0;
   border: 1px solid var(--border-hairline);
-  border-left: 3px solid var(--accent-primary);
+  border-left: 3px solid var(--text-primary);
   border-radius: 0 0.5rem 0.5rem 0;
   background-color: var(--bg-subtle);
   padding: 0.9rem 1.1rem;
@@ -181,7 +194,7 @@ html.dark .astro-code span {
 
 .callout-tip { border-left-color: var(--signal-positive); }
 .callout-warning, .callout-caution { border-left-color: var(--signal-warn); }
-.callout-important { border-left-color: var(--accent-secondary); }
+.callout-important { border-left-color: var(--accent-primary); }
 
 .callout-title {
   font-weight: 600;

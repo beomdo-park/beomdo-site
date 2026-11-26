@@ -91,11 +91,11 @@ const jsonLd =
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDesc} />
 
-    <!-- Fonts: Pretendard Variable + Instrument Sans + JetBrains Mono -->
+    <!-- Fonts: Pretendard Variable + Geist + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link
@@ -135,18 +135,18 @@ const jsonLd =
       {t.skipToContent}
     </a>
 
-    <!-- Minimal Academic Header -->
+    <!-- Minimal Monochrome Header (DESIGN.md: 60px, rounded-full pill nav) -->
     <header class="sticky top-0 z-40 border-b border-[var(--border-hairline)] bg-[var(--bg-canvas)]/92 backdrop-blur-md">
-      <div class="mx-auto flex h-14 max-w-4xl items-center justify-between px-4 sm:px-6 gap-3">
+      <div class="mx-auto flex h-15 max-w-4xl items-center justify-between px-4 sm:px-6 gap-3">
         <a
           href={getLocalePath(locale, '/')}
-          class="flex items-baseline gap-2 text-[15px] font-semibold tracking-tight text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-colors shrink-0"
+          class="flex items-baseline gap-2 text-[15px] font-semibold tracking-tight text-[var(--text-primary)] hover:opacity-75 transition-opacity shrink-0"
         >
           <span>{t.brandName}</span>
           <span class="hidden sm:inline text-xs font-normal text-[var(--text-tertiary)]">{t.brandSub}</span>
         </a>
 
-        <nav aria-label="Primary navigation" class="hidden md:flex items-center gap-1">
+        <nav aria-label="Primary navigation" class="hidden md:flex items-center gap-0.5">
           {
             navItems.map((item) => {
               const isHome = item.href === '/' || item.href === '/en/';
@@ -158,9 +158,9 @@ const jsonLd =
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
                   class:list={[
-                    'rounded-md px-2.5 py-1.5 text-sm transition-colors',
+                    'rounded-full px-3 py-1.5 text-[13.5px] transition-colors',
                     active
-                      ? 'font-semibold text-[var(--text-primary)] bg-[var(--bg-subtle)]'
+                      ? 'font-medium text-[var(--text-primary)] bg-[var(--bg-muted)]'
                       : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]',
                   ]}
                 >
@@ -176,14 +176,14 @@ const jsonLd =
           <div
             role="group"
             aria-label="Language switcher"
-            class="inline-flex h-8 items-center rounded-md border border-[var(--border-hairline)] bg-[var(--bg-subtle)] p-0.5 font-mono text-[11px]"
+            class="inline-flex h-8 items-center rounded-full border border-[var(--border-hairline)] bg-[var(--bg-muted)] p-0.5 font-mono text-[11px]"
           >
             <a
               href={koHref}
               hreflang="ko"
               aria-current={locale === 'ko' ? 'true' : undefined}
               class:list={[
-                'rounded px-1.5 py-1 leading-none transition-colors',
+                'rounded-full px-2 py-1 leading-none transition-colors',
                 locale === 'ko'
                   ? 'bg-[var(--bg-surface)] font-semibold text-[var(--text-primary)] shadow-2xs'
                   : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]',
@@ -196,7 +196,7 @@ const jsonLd =
               hreflang="en"
               aria-current={locale === 'en' ? 'true' : undefined}
               class:list={[
-                'rounded px-1.5 py-1 leading-none transition-colors',
+                'rounded-full px-2 py-1 leading-none transition-colors',
                 locale === 'en'
                   ? 'bg-[var(--bg-surface)] font-semibold text-[var(--text-primary)] shadow-2xs'
                   : 'text-[var(--text-tertiary)] hover:text-[var(--text-primary)]',
