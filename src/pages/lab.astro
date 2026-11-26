@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import QEnvSExplorer from '../components/react/QEnvSExplorer';
+import RoqetExplorer from '../components/react/RoqetExplorer';
+---
+
+<BaseLayout
+  title="Interactive Lab"
+  description="Interactive physics and experiment explorers for QEnvS open quantum control and ROQET sub-microsecond surface-code QEC decoders."
+>
+  <header class="pb-8 border-b border-[var(--border-hairline)] space-y-3">
+    <h1 class="text-3xl font-bold tracking-tight text-[var(--text-primary)]">Interactive Research Lab</h1>
+    <p class="text-base text-[var(--text-secondary)] max-w-[68ch] leading-relaxed">
+      Explore exact open-system quantum battery trajectories from <strong class="text-[var(--text-primary)]">QEnvS</strong>
+      and verified surface-code decoder measurements from <strong class="text-[var(--text-primary)]">ROQET</strong> directly
+      in the browser. Every number below corresponds to published experiments or closed-form validation checks.
+    </p>
+    <div class="flex flex-wrap gap-2 text-xs font-mono">
+      <a href="#qenvs" class="rounded-md border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-2.5 py-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+        #qenvs · Open Quantum Control
+      </a>
+      <a href="#roqet" class="rounded-md border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-2.5 py-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+        #roqet · QEC Decoder &amp; SoC
+      </a>
+    </div>
+  </header>
+
+  <div class="pt-8 space-y-12">
+    <section id="qenvs" class="scroll-mt-20 space-y-3">
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 class="text-xl font-semibold text-[var(--text-primary)]">QEnvS — Open Quantum Battery &amp; Dicke Scaling</h2>
+        <a href="/projects/qenvs" class="text-xs font-medium text-[var(--accent-primary)] hover:underline">
+          Project details &amp; PyPI
+        </a>
+      </div>
+      <QEnvSExplorer client:load />
+    </section>
+
+    <section id="roqet" class="scroll-mt-20 space-y-3">
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 class="text-xl font-semibold text-[var(--text-primary)]">ROQET — Pre-Decoder Gate &amp; On-Chip QECCT SoC</h2>
+        <a href="/projects/roqet" class="text-xs font-medium text-[var(--accent-primary)] hover:underline">
+          Project details &amp; 8-week log
+        </a>
+      </div>
+      <RoqetExplorer client:visible />
+    </section>
+  </div>
+</BaseLayout>

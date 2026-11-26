@@ -1,0 +1,82 @@
+---
+title: '[2026 ABC 프로젝트 멘토링 2기] 프로젝트 8주차 - 프로젝트를 마치며'
+description: ROQET 팀의 ABC 프로젝트 멘토링 마지막 기술노트. 1주차부터 7주차까지의 흐름과 최종 결과를 짧게 정리하고, 7주 동안
+  배운 점을 기록합니다.
+pubDate: '2026-05-24'
+author: Beomdo Park
+categories:
+- ABC프로젝트멘토링
+- 유클리드소프트
+- 고용노동부
+- 대한상공회의소
+- 미래내일일경험사업
+- QEC
+tags:
+- 회고
+- 프로젝트마무리
+- QEC
+- 지식증류
+- PTQ
+lang: ko
+legacySlug: project-roqet-08-wrap-up
+draft: false
+series: ROQET
+seriesOrder: 8
+---
+
+> ABC 프로젝트 멘토링 2기 ROQET 팀의 마지막, 여덟 번째 기술노트입니다. 5월 18일 최종 결과물 발표회까지 모두 마쳤습니다. 이 글은 새 내용 없이, 지난 7주를 한 번 정리하고 직접 부딪히며 배운 점만 짧게 적습니다.
+
+
+<aside class="callout callout-tip">
+<div class="callout-title">지난 기술노트</div>
+
+- [1주차](/blog/project-roqet-01-gnn-quantization/) · [2주차](/blog/project-roqet-02-qec-stim-stabilizer/) · [3주차](/blog/project-roqet-03-detector-graph-gnn/) · [4주차](/blog/project-roqet-04-edge-aware-decoder/) · [5주차](/blog/project-roqet-05-predecoder-helpfulness/) · [6주차](/blog/project-roqet-06-dispatch-gate/) · [7주차(최종 결과물)](/blog/project-roqet-07-final-kd-ptq-pipeline/)
+
+</aside>
+
+---
+
+## 7주 한눈에
+
+| 주차 | 내용 |
+|---|---|
+| 1주차 | GNN과 Post-Training Quantization 개념 정리 |
+| 2주차 | Surface Code와 Stim 기반 신드롬 데이터 생성 |
+| 3주차 | Annotated Detector Graph와 GNN 디코더 첫 학습 |
+| 4주차 | 엣지 타입 분리 디코더, MWPM과의 격차 측정 |
+| 5주차 | 사전 디코더 호출의 균일 가정 검증 |
+| 6주차 | 선택적 호출 게이트와 분포 외 일반화 |
+| 7주차 | **최종 결과물**: Hybrid 지식 증류 + INT8 PTQ 경량 디코더 |
+
+전반부는 신드롬 데이터부터 GNN 디코더까지 직접 만들어 보는 학습 트랙, 후반부(5~6주차)는 사전 디코더 선택적 호출이라는 곁가지 실험, 그리고 7주차에서 최종 결과물인 Transformer 기반 경량 QEC 디코더 파이프라인으로 수렴했습니다.
+
+## 최종 결과 — 숫자로 정리
+
+| 지표 | 값 |
+|---|---|
+| 모델 크기 절감 | Teacher 대비 약 **99.4%** (4,772 KB → 26.7 KB) |
+| 추론 시간 | **0.34 µs** (코히런스 한도 1 µs 안에서 완료) |
+| LER | 약 **0.9%** (Teacher와 0.001 미만 차이) |
+| FPGA 자원 점유 | Zynq-7020 BRAM **4.2%** |
+
+상세 그래프와 FPGA 자원 분석은 [7주차 기술노트](/blog/project-roqet-07-final-kd-ptq-pipeline/)에 정리되어 있습니다.
+
+---
+
+## 돌아보며
+
+세 가지 정도가 기억에 남습니다.
+
+KD 단독으로는 모델 크기를 일정 수준 이상 줄이지 못했는데, INT8 PTQ를 추가로 적용하니 KD 단독 대비 크기가 4분의 1로 줄어 26.7KB가 됐습니다. 정확도 손실은 1% 미만이었습니다. 두 기법을 같이 썼을 때 결과가 어디까지 가는지 숫자로 확인한 것이 7주차 작업의 핵심이었습니다.
+
+발표회 Q&A에서 받은 질문 중 슬라이드와 7주차 글에 미리 적어둔 한계를 짚어주셨습니다. 실제 보드 합성 여부, 격자 거리 3에서 그친 이유 같은 것들입니다.
+
+7주차 글을 쓸 때 1주차부터 6주차까지의 글이 그대로 자료가 됐고, 발표 대본을 만들 때도 이전 글의 그림과 표를 가져와 썼습니다. 매주 글을 작성한 것이 결과물 발표회에 큰 도움이 되었습니다.
+
+---
+
+## 마치며
+
+7주간 프로젝트를 함께 진행해준 팀원들에게 너무 감사합니다.
+
+ROQET 팀의 기술노트는 이 글로 마무리합니다. 지난 프로젝트 기간동안 읽어주신 분들께도 감사드립니다.

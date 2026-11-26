@@ -1,0 +1,40 @@
+---
+interface Props {
+  type?: 'note' | 'tip' | 'warning' | 'important';
+  title?: string;
+}
+
+const { type = 'note', title } = Astro.props;
+
+const STYLES: Record<string, { border: string; badge: string; label: string }> = {
+  note: {
+    border: 'border-l-[var(--accent-primary)]',
+    badge: 'text-[var(--accent-primary)]',
+    label: 'Note',
+  },
+  tip: {
+    border: 'border-l-[var(--signal-positive)]',
+    badge: 'text-[var(--signal-positive)]',
+    label: 'Tip',
+  },
+  warning: {
+    border: 'border-l-[var(--signal-warn)]',
+    badge: 'text-[var(--signal-warn)]',
+    label: 'Warning',
+  },
+  important: {
+    border: 'border-l-[var(--accent-secondary)]',
+    badge: 'text-[var(--accent-secondary)]',
+    label: 'Important',
+  },
+};
+
+const s = STYLES[type] ?? STYLES.note;
+---
+
+<aside class={`my-6 rounded-r-lg border border-[var(--border-hairline)] border-l-3 ${s.border} bg-[var(--bg-subtle)]/70 px-4 py-3.5 text-sm`}>
+  <div class={`mb-1.5 font-semibold ${s.badge}`}>{title || s.label}</div>
+  <div class="prose-sm text-[var(--text-secondary)] [&>p:first-child]:mt-0 [&>p:last-child]:mb-0 [&>ul:last-child]:mb-0">
+    <slot />
+  </div>
+</aside>

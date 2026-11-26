@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogFilter, { type BlogCardItem } from '../../components/react/BlogFilter';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const items: BlogCardItem[] = posts.map((post) => {
+  const words = (post.body ?? '').split(/\s+/).filter(Boolean).length;
+  const readingMinutes = Math.max(2, Math.round(words / 220));
+  return {
+    id: post.id,
+    title: post.data.title,
+    description: post.data.description,
+    pubDate: post.data.pubDate.toISOString().slice(0, 10),
+    series: post.data.series,
+    seriesOrder: post.data.seriesOrder,
+    categories: post.data.categories,
+    tags: post.data.tags,
+    readingMinutes,
+    lang: post.data.lang,
+  };
+});
+---
+
+<BaseLayout
+  title="Blog"
+  description="Technical notes on Quantum Error Correction, Stim, GNN/Transformer decoders, scientific figure pipelines, and time-series anomaly detection."
+>
+  <header class="pb-8 border-b border-[var(--border-hairline)] space-y-3">
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h1 class="text-3xl font-bold tracking-tight text-[var(--text-primary)]">Engineering Blog</h1>
+      <a href="/rss.xml" class="font-mono text-xs text-[var(--accent-primary)] hover:underline">RSS Feed</a>
+    </div>
+    <p class="text-base text-[var(--text-secondary)] max-w-[68ch]">
+      Experiment logs, QEC decoder architecture breakdowns, and reproducible research tooling. Posts remain in their
+      original language (primarily Korean) with full math and code outputs preserved.
+    </p>
+  </header>
+
+  <div class="pt-8">
+    <BlogFilter client:load posts={items} />
+  </div>
+</BaseLayout>

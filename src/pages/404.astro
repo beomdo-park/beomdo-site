@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found">
+  <div class="py-16 space-y-5 max-w-lg">
+    <p class="font-mono text-sm text-[var(--accent-primary)]">404</p>
+    <h1 class="text-3xl font-bold tracking-tight text-[var(--text-primary)]">Page not found</h1>
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+      The URL you requested does not exist on this site. If you followed an older link from the Quarto blog, try searching with ⌘K or browsing the blog archive.
+    </p>
+    <div class="flex gap-3 pt-2">
+      <a href="/" class="rounded-lg bg-[var(--text-primary)] px-4 py-2 text-sm font-medium text-[var(--bg-canvas)]">
+        Go home
+      </a>
+      <a href="/blog" class="rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)] px-4 py-2 text-sm font-medium text-[var(--text-primary)]">
+        Browse blog
+      </a>
+    </div>
+  </div>
+</BaseLayout>

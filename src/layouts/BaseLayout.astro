@@ -1,0 +1,237 @@
+---
+import '../styles/global.css';
+import { SITE, NAV_ITEMS } from '../data/site';
+import ThemeToggle from '../components/react/ThemeToggle';
+import SearchModal from '../components/react/SearchModal';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogType?: 'website' | 'article';
+  pubDate?: Date;
+  canonicalPath?: string;
+  includeKatex?: boolean;
+}
+
+const {
+  title = SITE.title,
+  description = SITE.description,
+  ogType = 'website',
+  pubDate,
+  canonicalPath,
+  includeKatex = false,
+} = Astro.props;
+
+const fullTitle = title === SITE.title ? title : `${title} | ${SITE.shortTitle}`;
+const canonicalUrl = new URL(canonicalPath ?? Astro.url.pathname, Astro.site ?? 'https://beomdo-site.pbeomdo.workers.dev').toString();
+const currentPath = Astro.url.pathname;
+
+const jsonLd =
+  ogType === 'article'
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: title,
+        description,
+        author: { '@type': 'Person', name: SITE.author, url: Astro.site?.toString() },
+        datePublished: pubDate?.toISOString(),
+        url: canonicalUrl,
+      }
+    : {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: SITE.author,
+        jobTitle: 'Quantum AI & Scientific Machine Learning Researcher',
+        affiliation: { '@type': 'Organization', name: SITE.affiliation },
+        url: Astro.site?.toString(),
+        sameAs: [SITE.links.github, SITE.links.orcid, SITE.links.scholar, SITE.links.dbpia],
+      };
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="google-site-verification" content={SITE.verification.google} />
+    <meta name="naver-site-verification" content={SITE.verification.naver} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.author} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name} RSS`} href="/rss.xml" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Typography: Instrument Sans + JetBrains Mono + Pretendard Variable -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    {
+      includeKatex && (
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"
+          crossorigin="anonymous"
+        />
+      )
+    }
+
+    <!-- Prevent theme flash -->
+    <script is:inline>
+      (() => {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored === 'light' || stored === 'dark' ? stored : prefersDark ? 'dark' : 'light';
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      })();
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+
+  <body class="flex flex-col min-h-dvh selection:bg-[var(--accent-primary-soft)] selection:text-[var(--accent-primary)]">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-[var(--bg-surface)] focus:px-3 focus:py-2 focus:text-sm focus:border focus:border-[var(--accent-primary)]"
+    >
+      Skip to content
+    </a>
+
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-40 border-b border-[var(--border-hairline)] bg-[var(--bg-canvas)]/88 backdrop-blur-md">
+      <div class="mx-auto flex h-15 max-w-5xl items-center justify-between px-4 sm:px-6">
+        <a
+          href="/"
+          class="flex items-center gap-2.5 text-[15px] font-semibold tracking-tight text-[var(--text-primary)] hover:text-[var(--accent-primary)] transition-colors"
+        >
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded border border-[var(--border-strong)] bg-[var(--bg-surface)] font-mono text-xs font-semibold text-[var(--accent-primary)]">
+            BP
+          </span>
+          <span>Beomdo Park</span>
+        </a>
+
+        <nav aria-label="Primary navigation" class="hidden md:flex items-center gap-1">
+          {
+            NAV_ITEMS.map((item) => {
+              const active =
+                item.href === '/'
+                  ? currentPath === '/'
+                  : currentPath === item.href || currentPath.startsWith(`${item.href}/`);
+              return (
+                <a
+                  href={item.href}
+                  aria-current={active ? 'page' : undefined}
+                  class:list={[
+                    'rounded-md px-2.5 py-1.5 text-sm transition-colors',
+                    active
+                      ? 'bg-[var(--bg-subtle)] font-medium text-[var(--text-primary)]'
+                      : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-subtle)]/60',
+                  ]}
+                >
+                  {item.label}
+                </a>
+              );
+            })
+          }
+        </nav>
+
+        <div class="flex items-center gap-1.5">
+          <SearchModal client:load />
+          <ThemeToggle client:load />
+          <button
+            id="mobile-menu-btn"
+            type="button"
+            aria-label="Toggle navigation menu"
+            aria-expanded="false"
+            class="md:hidden inline-flex h-8 w-8 items-center justify-center rounded-md border border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="7" x2="20" y2="7" />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <line x1="4" y1="17" x2="20" y2="17" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Drawer -->
+      <nav
+        id="mobile-menu"
+        aria-label="Mobile navigation"
+        class="hidden md:hidden border-t border-[var(--border-hairline)] bg-[var(--bg-canvas)] px-4 py-3"
+      >
+        <div class="grid grid-cols-2 gap-1.5">
+          {
+            NAV_ITEMS.map((item) => {
+              const active = currentPath === item.href || currentPath.startsWith(`${item.href}/`);
+              return (
+                <a
+                  href={item.href}
+                  class:list={[
+                    'rounded-md px-3 py-2 text-sm',
+                    active
+                      ? 'bg-[var(--bg-subtle)] font-medium text-[var(--text-primary)]'
+                      : 'text-[var(--text-secondary)] hover:bg-[var(--bg-subtle)]/60',
+                  ]}
+                >
+                  {item.label}
+                </a>
+              );
+            })
+          }
+        </div>
+      </nav>
+    </header>
+
+    <main id="main-content" data-pagefind-body class="flex-1 mx-auto w-full max-w-5xl px-4 sm:px-6 py-10 sm:py-14">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-[var(--border-hairline)] bg-[var(--bg-surface)]/50">
+      <div class="mx-auto max-w-5xl px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-[var(--text-tertiary)]">
+        <div class="space-y-1">
+          <p class="text-[var(--text-secondary)] font-medium">
+            © {new Date().getFullYear()} {SITE.name} — {SITE.affiliation}
+          </p>
+          <p>Built with Astro, React, Tailwind CSS, and Cloudflare Workers + D1.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <a href={SITE.links.github} target="_blank" rel="noreferrer" class="hover:text-[var(--text-primary)] transition-colors">GitHub</a>
+          <a href={SITE.links.orcid} target="_blank" rel="noreferrer" class="hover:text-[var(--text-primary)] transition-colors">ORCID</a>
+          <a href={SITE.links.scholar} target="_blank" rel="noreferrer" class="hover:text-[var(--text-primary)] transition-colors">Scholar</a>
+          <a href={SITE.links.qenvsDocs} target="_blank" rel="noreferrer" class="hover:text-[var(--text-primary)] transition-colors">QEnvS Docs</a>
+          <a href="/rss.xml" class="hover:text-[var(--text-primary)] transition-colors">RSS</a>
+          <a href="/sitemap-index.xml" class="hover:text-[var(--text-primary)] transition-colors">Sitemap</a>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline>
+      const btn = document.getElementById('mobile-menu-btn');
+      const menu = document.getElementById('mobile-menu');
+      btn?.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        menu?.classList.toggle('hidden');
+      });
+    </script>
+  </body>
+</html>

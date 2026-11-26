@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PublicationList from '../components/react/PublicationList';
+import { PUBLICATIONS, PUB_STATS } from '../data/publications';
+import { SITE } from '../data/site';
+---
+
+<BaseLayout
+  title="Publications"
+  description="Peer-reviewed papers, conference proceedings, workshops, and granted patents by Beomdo Park across AAAI, IEEE T-QE, IJCAI, KDD, MDPI Energies, IEIE, and KICS."
+>
+  <header class="pb-8 border-b border-[var(--border-hairline)] space-y-4">
+    <div class="flex flex-wrap items-baseline justify-between gap-3">
+      <h1 class="text-3xl font-bold tracking-tight text-[var(--text-primary)]">Publications &amp; Patents</h1>
+      <div class="flex flex-wrap gap-3 text-xs font-medium text-[var(--accent-primary)]">
+        <a href={SITE.links.scholar} target="_blank" rel="noreferrer" class="hover:underline">Google Scholar</a>
+        <a href={SITE.links.orcid} target="_blank" rel="noreferrer" class="hover:underline">ORCID</a>
+        <a href={SITE.links.dbpia} target="_blank" rel="noreferrer" class="hover:underline">DBpia</a>
+      </div>
+    </div>
+
+    <dl class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      {[
+        ['Total Papers', `${PUB_STATS.totalPapers}`],
+        ['1st Author', `${PUB_STATS.firstAuthor}`],
+        ['International', `${PUB_STATS.international}`],
+        ['SCIE / ESCI', `${PUB_STATS.scie} / 1`],
+        ['Granted Patent', `${PUB_STATS.grantedPatents}`],
+      ].map(([k, v]) => (
+        <div class="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-3.5 py-2.5">
+          <dt class="text-[11px] text-[var(--text-tertiary)]">{k}</dt>
+          <dd class="font-mono text-lg font-semibold tabular-nums text-[var(--text-primary)]">{v}</dd>
+        </div>
+      ))}
+    </dl>
+  </header>
+
+  <div class="pt-8">
+    <PublicationList client:load publications={PUBLICATIONS} />
+  </div>
+</BaseLayout>
