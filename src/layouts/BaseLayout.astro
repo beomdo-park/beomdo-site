@@ -113,15 +113,13 @@ const jsonLd =
       )
     }
 
-    <!-- Clean Light Default (switches to dark if user chose dark) -->
+    <!-- Follow OS/system color scheme by default; support optional manual override -->
     <script is:inline>
       (() => {
-        const stored = localStorage.getItem('theme');
-        if (stored === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+        const pref = localStorage.getItem('theme_pref') || 'system';
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDark = pref === 'dark' || (pref === 'system' && prefersDark);
+        document.documentElement.classList.toggle('dark', isDark);
       })();
     </script>
 

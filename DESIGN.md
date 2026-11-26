@@ -80,7 +80,7 @@ rounded:
 ## 1. Visual Philosophy (시각 철학)
 - **Monochrome-First Precision (Vercel-inspired)**: 기본 화면은 순백(`#FFFFFF`) 위의 진한 잉크(`#171717`)와 `1px` 헤어라인(`#EBEBEB`)만으로 위계를 만듭니다. 장식용 그라디언트, 블러 배경, 무거운 드롭 섀도를 쓰지 않습니다.
 - **Surgical Accent**: 포인트 컬러(`#0070F3` / 다크 `#3291FF`)는 클릭 가능한 링크, DBpia/학술 태그, 인터랙티브 차트 데이터 시리즈에만 절제해 사용합니다.
-- **Light Default + Obsidian Dark**: 학술 논문·CV·긴 한국어 기술 글을 읽기 편하도록 깨끗한 라이트 모드를 기본으로 두고, 우측 상단 토글로 `#0A0A0A` 다크 모드를 제공합니다.
+- **System-First Theme (Light & Obsidian Dark)**: 기본값은 OS/브라우저 시스템 설정(`prefers-color-scheme`)을 실시간 추적하며, 우측 상단 3단계 토글(`System → Light → Dark`)로 언제든 수동 고정 또는 시스템 복귀가 가능합니다.
 
 ## 2. Information Architecture (포트폴리오 vs 블로그 명확 분리)
 상단 네비게이션은 **5개 비겹침 메뉴**로 고정합니다.
