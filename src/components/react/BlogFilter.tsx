@@ -12,6 +12,7 @@ export interface BlogCardItem {
   tags: string[];
   readingMinutes: number;
   lang: 'ko' | 'en';
+  thumbnail?: string;
 }
 
 interface Props {
@@ -123,35 +124,64 @@ export default function BlogFilter({ posts, locale = 'ko' }: Props) {
       </div>
 
       <ul className="divide-y divide-[var(--border-hairline)] border-t border-[var(--border-hairline)]">
-        {filtered.map((post) => (
-          <li key={post.id} className="py-5">
-            <a href={`/blog/${post.id}`} className="group block space-y-1.5">
-              <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[var(--text-tertiary)]">
-                <time dateTime={post.pubDate} className="tabular-nums">
-                  {post.pubDate}
-                </time>
-                <span>·</span>
-                <span>{post.readingMinutes} {minRead}</span>
-                {post.series && (
-                  <span className="rounded bg-[var(--accent-primary-soft)] px-1.5 py-0.5 text-[11px] text-[var(--accent-primary)]">
-                    {post.series}
-                    {post.seriesOrder ? ` #${post.seriesOrder}` : ''}
-                  </span>
-                )}
-              </div>
+        {filtered.map((post) => {
+          const fallbackCode = post.series
+            ? `${post.series}${post.seriesOrder ? ` · #${post.seriesOrder}` : ''}`
+            : post.categories[0] || 'NOTE';
+          return (
+            <li key={post.id} className="py-5">
+              <a
+                href={`/blog/${post.id}`}
+                className="group flex items-start justify-between gap-4 sm:gap-6"
+              >
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[var(--text-tertiary)]">
+                    <time dateTime={post.pubDate} className="tabular-nums">
+                      {post.pubDate}
+                    </time>
+                    <span>·</span>
+                    <span>{post.readingMinutes} {minRead}</span>
+                    {post.series && (
+                      <span className="rounded bg-[var(--accent-primary-soft)] px-1.5 py-0.5 text-[11px] text-[var(--accent-primary)]">
+                        {post.series}
+                        {post.seriesOrder ? ` #${post.seriesOrder}` : ''}
+                      </span>
+                    )}
+                  </div>
 
-              <h2 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors leading-snug">
-                {post.title}
-              </h2>
+                  <h2 className="text-base sm:text-[17px] font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors leading-snug">
+                    {post.title}
+                  </h2>
 
-              {post.description && (
-                <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-[70ch] line-clamp-2">
-                  {post.description}
-                </p>
-              )}
-            </a>
-          </li>
-        ))}
+                  {post.description && (
+                    <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-[66ch] line-clamp-2">
+                      {post.description}
+                    </p>
+                  )}
+                </div>
+
+                {/* Compact Right-Hand Thumbnail (object-contain so scientific figures never crop) */}
+                <div className="shrink-0 w-24 h-16 sm:w-44 sm:h-28 overflow-hidden rounded-lg border border-[var(--border-hairline)] group-hover:border-[var(--border-strong)] transition-colors">
+                  {post.thumbnail ? (
+                    <img
+                      src={post.thumbnail}
+                      alt={post.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-contain bg-white p-1.5"
+                    />
+                  ) : (
+                    <div className="lab-grid-bg flex h-full w-full flex-col items-center justify-center bg-[var(--bg-subtle)] px-2 text-center">
+                      <span className="font-mono text-[10px] sm:text-[11px] font-medium text-[var(--text-tertiary)]">
+                        {fallbackCode}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

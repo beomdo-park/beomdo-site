@@ -16,7 +16,10 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 );
 
 const items: BlogCardItem[] = posts.map((post) => {
-  const words = (post.body ?? '').split(/\s+/).filter(Boolean).length;
+  const body = post.body ?? '';
+  const words = body.split(/\s+/).filter(Boolean).length;
+  const firstImgMatch = body.match(/!\[[^\]]*\]\((\/blog-assets\/[^)]+)\)/);
+  const thumbnail = post.data.heroImage || firstImgMatch?.[1];
   return {
     id: post.id,
     title: post.data.title,
@@ -28,6 +31,7 @@ const items: BlogCardItem[] = posts.map((post) => {
     tags: post.data.tags,
     readingMinutes: Math.max(2, Math.round(words / 220)),
     lang: post.data.lang,
+    thumbnail,
   };
 });
 ---
