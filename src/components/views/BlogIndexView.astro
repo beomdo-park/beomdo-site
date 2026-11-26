@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogFilter, { type BlogCardItem } from '../react/BlogFilter';
+import type { Locale } from '../../data/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const isKo = locale === 'ko';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const items: BlogCardItem[] = posts.map((post) => {
+  const words = (post.body ?? '').split(/\s+/).filter(Boolean).length;
+  return {
+    id: post.id,
+    title: post.data.title,
+    description: post.data.description,
+    pubDate: post.data.pubDate.toISOString().slice(0, 10),
+    series: post.data.series,
+    seriesOrder: post.data.seriesOrder,
+    categories: post.data.categories,
+    tags: post.data.tags,
+    readingMinutes: Math.max(2, Math.round(words / 220)),
+    lang: post.data.lang,
+  };
+});
+---
+
+<BaseLayout
+  locale={locale}
+  title={isKo ? '기술 블로그' : 'Blog'}
+  description={
+    isKo
+      ? '양자 오류 정정(QEC), Stim, GNN/Transformer 디코더, 논문용 Figure 파이프라인, 산업 시계열 이상 탐지 기술 기록.'
+      : 'Technical notes on Quantum Error Correction, Stim, neural decoders, scientific figure pipelines, and time-series anomaly detection.'
+  }
+>
+  <header class="pb-7 border-b border-[var(--border-hairline)] space-y-2.5">
+    <div class="flex flex-wrap items-baseline justify-between gap-2">
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+        {isKo ? '기술 블로그' : 'Engineering Blog'}
+      </h1>
+      <a href="/rss.xml" class="font-mono text-xs text-[var(--accent-primary)] hover:underline">RSS</a>
+    </div>
+    <p class="text-sm sm:text-base text-[var(--text-secondary)] max-w-[68ch] leading-relaxed">
+      {isKo
+        ? '연구 과정에서 직접 구현하고 검증한 실험 노트와 튜토리얼을 모아둔 공간입니다. 기존 Quarto 블로그의 15편(코드·출력·수식 포함)을 그대로 이어갑니다.'
+        : 'Implementation logs, QEC experiments, and reproducible tooling notes. Individual articles are written primarily in Korean with full code, outputs, and KaTeX equations.'}
+    </p>
+  </header>
+
+  <div class="pt-7">
+    <BlogFilter client:load posts={items} locale={locale} />
+  </div>
+</BaseLayout>

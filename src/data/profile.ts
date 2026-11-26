@@ -1,139 +1,152 @@
-export interface ExperienceItem {
-  period: string;
-  role: string;
-  org: string;
-  detail: string;
-  url?: string;
-}
-
-export interface AwardItem {
-  date: string;
-  title: string;
-  org: string;
-  detail?: string;
-  kind: 'award' | 'competition' | 'certification';
-}
-
 export const PROFILE = {
-  headline: 'Quantum AI & Scientific ML Researcher',
-  summary:
-    'Computer Engineering researcher at Eco AI Lab (Hanbat National University), building physics-validated quantum control environments (QEnvS) and sub-microsecond hardware-aware neural decoders for fault-tolerant quantum computing (ROQET).',
+  bio: {
+    ko: '국립한밭대학교 컴퓨터공학과 Eco AI Lab 학부연구생(전 랩장)입니다. 개방 양자계의 강화학습 제어(양자 배터리)와 초전도 표면 부호를 위한 1 µs 이내 온칩 신경망 QEC 디코더를 연구하며, 물리 검증 양자 제어 오픈소스 라이브러리 QEnvS를 개발·유지보수하고 있습니다.',
+    en: 'Undergraduate researcher (former Lab Lead) at Eco AI Lab, Dept. of Computer Engineering, Hanbat National University. I work on reinforcement learning for open quantum control (quantum batteries) and sub-microsecond hardware-aware neural decoders for surface-code QEC, and I maintain the open-source QEnvS library.',
+  },
+  researchFocus: [
+    {
+      titleKo: '양자 배터리 및 개방 양자계 제어',
+      titleEn: 'Quantum Batteries & Open Quantum Control',
+      descKo: '비마르코프 노이즈·결어긋남 환경에서도 에르고트로피와 집단 초흡수 이득을 지키는 커리큘럼 강화학습, 물리 지식 기반 그래프 트랜스포머, JAX 기반 물리 검증 환경(QEnvS)을 연구합니다.',
+      descEn: 'Curriculum RL, physics-informed graph transformers, and differentiable JAX/dynamiqs environments (QEnvS) that preserve ergotropy and collective charging advantage under realistic dissipation.',
+      meta: 'AAAI-26 · IEEE T-QE · IJCAI-26 · KR Patent',
+    },
+    {
+      titleKo: '하드웨어 인지 양자 오류 정정(QEC)',
+      titleEn: 'Hardware-Aware Quantum Error Correction',
+      descKo: '1 µs 코히런스 한도를 만족하는 Hybrid KD + INT8 PTQ 온칩 디코더(ROQET, 26.7 KB · 0.34 µs)와 분포 외 거리(d=15,17) 손해를 자동 기각하는 선택적 호출 게이트를 설계합니다.',
+      descEn: 'Sub-microsecond on-chip QECCT compression (ROQET: 26.7 KB, 0.34 µs, bit-exact RTL) and selective pre-decoder dispatch gates that automatically reject OOD regressions at d=15, 17.',
+      meta: 'IEIE 2026 (3 papers) · Zynq-7020 / 8nm RTL',
+    },
+    {
+      titleKo: '과학 기계학습 및 산업 시계열 제어',
+      titleEn: 'Scientific ML & Reliable Industrial Control',
+      descKo: 'FFT 주기 추출, 보수적 안전 강화학습, 앙상블 비상관화 방법론을 산업 전력 이상 탐지와 재생에너지 예측 문제에 적용합니다.',
+      descEn: 'Domain-structured signal priors, capacity-constrained safe RL, and disciplined validation applied to industrial power anomaly detection and energy forecasting.',
+      meta: 'MDPI Energies (SCIE) · KDD-26 · DACON Top 2%',
+    },
+  ],
   education: [
     {
-      period: '2023 – 2027 (Expected)',
-      degree: 'B.S. in Computer Engineering',
-      institution: 'Hanbat National University (HBNU), Daejeon, South Korea',
-      detail: 'Undergraduate Researcher & Former Lab Lead, Eco AI Lab',
+      period: '2023.03 – 2027.02 (예정)',
+      periodEn: 'Mar 2023 – Feb 2027 (Expected)',
+      degreeKo: '국립한밭대학교 컴퓨터공학과 학사 과정',
+      degreeEn: 'B.S. in Computer Engineering, Hanbat National University',
+      detailKo: 'Eco AI Lab 학부연구생 · 2025–2026 랩장',
+      detailEn: 'Undergraduate Researcher & Former Lab Lead (2025–2026), Eco AI Lab',
     },
   ],
   experiences: [
     {
       period: '2025.05 – 2026.03',
-      role: 'Lab Lead & Undergraduate Researcher',
-      org: 'Eco AI Lab, Hanbat National University',
-      detail:
-        'Led lab research operations and co-authored 20 papers across quantum battery RL control, quantum error correction decoders, and industrial time-series ML.',
+      roleKo: 'Eco AI Lab 랩장 및 학부연구생',
+      roleEn: 'Lab Lead & Undergraduate Researcher',
+      orgKo: '국립한밭대학교 Eco AI Lab',
+      orgEn: 'Eco AI Lab, Hanbat National University',
+      detailKo: '양자 배터리 강화학습, QEC 디코더, 산업 시계열 AI 연구 수행(논문 20편·특허 1건) 및 연구실 일정·협업 총괄.',
+      detailEn: 'Led lab operations and co-authored 20 papers + 1 granted patent across quantum battery RL, QEC decoders, and industrial ML.',
       url: 'https://sites.google.com/view/ecoai/introduction',
     },
     {
       period: '2026.03 – 2026.05',
-      role: 'Team Lead — ROQET QEC Accelerator SoC',
-      org: '2026 ABC Project Mentoring (Euclid Soft)',
-      detail:
-        'Designed Hybrid KD + INT8 PTQ QECCT decoder (26.7 KB, 0.34 µs) and 58.9k-param selective pre-decoder dispatch gate with bit-exact RTL verification.',
+      roleKo: 'ROQET 팀장 — QEC 온칩 AI 가속기 SoC 설계',
+      roleEn: 'Team Lead — ROQET QEC Accelerator SoC',
+      orgKo: '2026 ABC 프로젝트 멘토링 (유클리드소프트)',
+      orgEn: '2026 ABC Project Mentoring (Euclid Soft)',
+      detailKo: 'Hybrid KD + INT8 PTQ 기반 26.7 KB·0.34 µs QECCT 디코더와 58.9k 선택적 호출 게이트, 비트정확 RTL 검증 주도.',
+      detailEn: 'Led Hybrid KD + INT8 PTQ QECCT decoder (26.7 KB, 0.34 µs), 58.9k-param dispatch gate, and bit-exact RTL verification.',
     },
     {
       period: '2025.06 – 2025.07',
-      role: 'Software Engineering Intern',
-      org: 'Argoon Co., Ltd. ((주)아군)',
-      detail:
-        'Simulated autonomous parking robots in Gazebo and optimized navigation trajectories and runtime software performance.',
+      roleKo: '소프트웨어 엔지니어링 인턴',
+      roleEn: 'Software Engineering Intern',
+      orgKo: '(주)아군 (Argoon Co., Ltd.)',
+      orgEn: 'Argoon Co., Ltd.',
+      detailKo: 'Gazebo 기반 자율주행 주차로봇 시뮬레이션, 경로 최적화 및 운영 소프트웨어 성능 테스트 수행.',
+      detailEn: 'Simulated autonomous parking robots in Gazebo and optimized navigation trajectories and runtime software performance.',
       url: 'https://argoon.net',
     },
     {
       period: '2025.05 – 2025.06',
-      role: 'Research Mentee — Industrial Power Anomaly Detection',
-      org: '2025 ABC Project Mentoring (Euclid Soft)',
-      detail:
-        'Developed FFT periodicity extraction + GELU CNN-GRU Autoencoder anomaly detection pipeline published at IEIE 2025.',
+      roleKo: '산업 전력 이상치 탐지 프로젝트 멘티',
+      roleEn: 'Research Mentee — Industrial Power Anomaly Detection',
+      orgKo: '2025 ABC 프로젝트 멘토링 (유클리드소프트)',
+      orgEn: '2025 ABC Project Mentoring (Euclid Soft)',
+      detailKo: 'FFT 주기 추출 + GELU CNN-GRU 오토인코더 이상 탐지 파이프라인 구축 및 IEIE 2025 1저자 발표.',
+      detailEn: 'Built FFT periodicity + GELU CNN-GRU Autoencoder anomaly detection pipeline published as 1st author at IEIE 2025.',
     },
     {
       period: '2025.03 – 2025.06',
-      role: 'Teaching Assistant — Data Science',
-      org: 'Dept. of Computer Engineering, HBNU',
-      detail:
-        'Prepared lab notebooks and supported student Q&A for Prof. Sanggeum Lee’s undergraduate Data Science course.',
+      roleKo: '데이터사이언스 실습조교 (25-1학기)',
+      roleEn: 'Teaching Assistant — Data Science',
+      orgKo: '국립한밭대학교 컴퓨터공학과 (이상금 교수님)',
+      orgEn: 'Dept. of Computer Engineering, HBNU',
+      detailKo: '학부 데이터사이언스 강의 실습 자료 제작 및 수강생 질의응답 지원.',
+      detailEn: 'Prepared lab notebooks and supported student Q&A for undergraduate Data Science.',
     },
-  ] satisfies ExperienceItem[],
+  ],
   awards: [
     {
       date: '2026.11',
-      title: 'Excellence Award — Computer Engineering Portfolio Competition',
-      org: 'Hanbat National University',
-      kind: 'award',
+      titleKo: '컴퓨터공학과 포트폴리오 경진대회 우수상',
+      titleEn: 'Excellence Award — Computer Engineering Portfolio Competition',
+      orgKo: '국립한밭대학교',
+      orgEn: 'Hanbat National University',
     },
     {
       date: '2026.10',
-      title: 'Encouragement Award — Creative Comprehensive Design Competition',
-      org: 'Hanbat National University',
-      detail: 'ROQET: On-Device AI Accelerator SoC for Surface-Code QEC',
-      kind: 'award',
+      titleKo: '창의적 종합설계 경진대회 장려상 (ROQET QEC 온디바이스 AI 가속기 SoC)',
+      titleEn: 'Encouragement Award — Creative Comprehensive Design Competition (ROQET SoC)',
+      orgKo: '국립한밭대학교',
+      orgEn: 'Hanbat National University',
     },
     {
       date: '2026.08',
-      title: 'Top 2% (38th / 2,195, Private LB) — 3rd Wind Power Forecasting AI Competition',
-      org: 'DACON',
-      kind: 'competition',
+      titleKo: '데이콘 제3회 풍력발전량 예측 AI 경진대회 상위 2% (38위 / 2,195명, Private)',
+      titleEn: 'Top 2% (38th / 2,195, Private LB) — 3rd Wind Power Forecasting AI Competition',
+      orgKo: 'DACON',
+      orgEn: 'DACON',
     },
     {
       date: '2025.11',
-      title: 'Excellence Award — KICS Fall Undergraduate Capstone Competition',
-      org: 'Korean Institute of Communications and Information Sciences (KICS)',
-      detail: 'GNN-based RL for Quantum Battery Superabsorption Advantage',
-      kind: 'award',
+      titleKo: '한국통신학회 추계 학부생 캡스톤디자인 경진대회 우수상',
+      titleEn: 'Excellence Award — KICS Fall Undergraduate Capstone Competition',
+      orgKo: '한국통신학회 (KICS)',
+      orgEn: 'KICS',
     },
     {
       date: '2025.11',
-      title: 'Encouragement Award — KICS Fall Best Undergraduate Paper',
-      org: 'Korean Institute of Communications and Information Sciences (KICS)',
-      detail: 'Multi-Stage RL Framework for Robust Quantum Battery Charging',
-      kind: 'award',
+      titleKo: '한국통신학회 추계 우수논문상 장려상',
+      titleEn: 'Encouragement Award — KICS Fall Best Undergraduate Paper',
+      orgKo: '한국통신학회 (KICS)',
+      orgEn: 'KICS',
     },
     {
       date: '2025.10',
-      title: 'Excellence Award — Computer Engineering Portfolio Competition',
-      org: 'Hanbat National University',
-      kind: 'award',
+      titleKo: '컴퓨터공학과 포트폴리오 경진대회 우수상',
+      titleEn: 'Excellence Award — Computer Engineering Portfolio Competition',
+      orgKo: '국립한밭대학교',
+      orgEn: 'Hanbat National University',
     },
     {
       date: '2025.11',
-      title: 'TOPCIT Level 3',
-      org: 'Institute of Information & Communications Technology Planning & Evaluation (IITP)',
-      kind: 'certification',
+      titleKo: 'TOPCIT 정기평가 수준 3',
+      titleEn: 'TOPCIT Level 3',
+      orgKo: '정보통신기획평가원 (IITP)',
+      orgEn: 'IITP',
     },
     {
       date: '2025.06',
-      title: 'ADsP (Advanced Data Analytics Semi-Professional)',
-      org: 'Korea Data Agency (K-DATA)',
-      kind: 'certification',
+      titleKo: '데이터분석 준전문가 (ADsP)',
+      titleEn: 'ADsP (Advanced Data Analytics Semi-Professional)',
+      orgKo: '한국데이터산업진흥원 (K-DATA)',
+      orgEn: 'K-DATA',
     },
-  ] satisfies AwardItem[],
+  ],
   techStack: [
-    {
-      group: 'Quantum & Physics',
-      items: ['JAX', 'dynamiqs', 'Stim', 'PyMatching', 'QuTiP', 'Qiskit'],
-    },
-    {
-      group: 'Machine Learning & RL',
-      items: ['PyTorch', 'PyTorch Geometric', 'Gymnasium', 'Stable-Baselines3', 'scikit-learn', 'LightGBM'],
-    },
-    {
-      group: 'Hardware & Edge AI',
-      items: ['SystemVerilog / RTL', 'INT8 PTQ', 'Knowledge Distillation', 'Xilinx Vivado', 'Verilator', 'Cocotb'],
-    },
-    {
-      group: 'Web, Data & Infra',
-      items: ['Python', 'TypeScript', 'Astro', 'React', 'Cloudflare Workers / D1', 'PostgreSQL', 'LaTeX / TikZ'],
-    },
+    { groupKo: '양자 · 물리 시뮬레이션', groupEn: 'Quantum & Physics', items: ['JAX', 'dynamiqs', 'Stim', 'PyMatching', 'QuTiP', 'Qiskit'] },
+    { groupKo: '머신러닝 · 강화학습', groupEn: 'Machine Learning & RL', items: ['PyTorch', 'PyTorch Geometric', 'Gymnasium', 'Stable-Baselines3', 'scikit-learn', 'LightGBM'] },
+    { groupKo: '하드웨어 · 엣지 경량화', groupEn: 'Hardware & Edge AI', items: ['SystemVerilog / RTL', 'INT8 PTQ', 'Knowledge Distillation', 'Xilinx Vivado', 'Verilator', 'Cocotb'] },
+    { groupKo: '웹 · 데이터 · 문서화', groupEn: 'Web, Data & Tooling', items: ['Python', 'TypeScript', 'Astro', 'React', 'Cloudflare Workers / D1', 'PostgreSQL', 'LaTeX / TikZ'] },
   ],
 };

@@ -1,0 +1,122 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import QEnvSExplorer from '../react/QEnvSExplorer';
+import RoqetExplorer from '../react/RoqetExplorer';
+import type { ProjectItem } from '../../data/projects';
+import { getLocalePath, type Locale } from '../../data/i18n';
+
+interface Props {
+  project: ProjectItem;
+  locale: Locale;
+}
+
+const { project, locale } = Astro.props;
+const isKo = locale === 'ko';
+
+const relatedPosts = project.relatedBlogPrefix
+  ? (await getCollection('blog', ({ id, data }) => !data.draft && id.startsWith(project.relatedBlogPrefix!))).sort(
+      (a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf()
+    )
+  : [];
+---
+
+<BaseLayout locale={locale} title={project.name} description={project.tagline[locale]}>
+  <div class="space-y-10">
+    <header class="pb-7 border-b border-[var(--border-hairline)] space-y-3.5">
+      <a href={getLocalePath(locale, '/projects')} class="text-xs font-medium text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
+        ← {isKo ? '프로젝트 목록' : 'All projects'}
+      </a>
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <h1 class="text-3xl font-bold tracking-tight text-[var(--text-primary)]">{project.name}</h1>
+        <span class="font-mono text-xs text-[var(--text-tertiary)]">
+          {project.period} · {isKo ? project.statusKo : project.statusEn}
+        </span>
+      </div>
+      <p class="text-base text-[var(--text-secondary)] max-w-[68ch]">{project.tagline[locale]}</p>
+
+      {project.links.length > 0 && (
+        <div class="flex flex-wrap gap-2 pt-1">
+          {project.links.map((l) => {
+            const href = l.href.startsWith('/blog') && !isKo ? `/en${l.href}` : l.href;
+            return (
+              <a
+                href={href}
+                target={l.href.startsWith('http') ? '_blank' : undefined}
+                rel={l.href.startsWith('http') ? 'noreferrer' : undefined}
+                class="rounded-md border border-[var(--border-strong)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-subtle)] transition-colors"
+              >
+                {isKo ? l.labelKo : l.labelEn}
+              </a>
+            );
+          })}
+        </div>
+      )}
+    </header>
+
+    <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {project.metrics.map((m) => (
+        <div class="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-subtle)]/50 p-3.5">
+          <dt class="text-[11px] text-[var(--text-tertiary)]">{isKo ? m.labelKo : m.labelEn}</dt>
+          <dd class="mt-1 font-mono text-base sm:text-lg font-semibold text-[var(--text-primary)]">{m.value}</dd>
+          {(isKo ? m.contextKo : m.contextEn) && (
+            <div class="mt-0.5 text-[11px] text-[var(--text-secondary)]">{isKo ? m.contextKo : m.contextEn}</div>
+          )}
+        </div>
+      ))}
+    </dl>
+
+    <section class="grid grid-cols-1 md:grid-cols-12 gap-8">
+      <div class="md:col-span-5 space-y-3">
+        <h2 class="text-base font-semibold text-[var(--text-primary)]">{isKo ? '문제 정의' : 'Problem'}</h2>
+        <p class="text-sm leading-relaxed text-[var(--text-secondary)]">{project.problem[locale]}</p>
+        <p class="text-sm leading-relaxed text-[var(--text-secondary)]">{project.summary[locale]}</p>
+      </div>
+      <div class="md:col-span-7 space-y-3">
+        <h2 class="text-base font-semibold text-[var(--text-primary)]">{isKo ? '설계 및 검증 핵심' : 'Architecture & validation'}</h2>
+        <ul class="space-y-2.5 text-sm leading-relaxed text-[var(--text-secondary)] list-disc pl-5">
+          {project.architecture[locale].map((pt) => <li>{pt}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    {project.labTab === 'qenvs' && (
+      <section id="demo" class="space-y-3 scroll-mt-20">
+        <h2 class="text-base font-semibold text-[var(--text-primary)]">
+          {isKo ? '인터랙티브 물리 시뮬레이션 탐색기' : 'Interactive physics explorer'}
+        </h2>
+        <QEnvSExplorer client:load />
+      </section>
+    )}
+    {project.labTab === 'roqet' && (
+      <section id="demo" class="space-y-3 scroll-mt-20">
+        <h2 class="text-base font-semibold text-[var(--text-primary)]">
+          {isKo ? '인터랙티브 QEC 실험 결과 탐색기' : 'Interactive QEC experiment explorer'}
+        </h2>
+        <RoqetExplorer client:load />
+      </section>
+    )}
+
+    {relatedPosts.length > 0 && (
+      <section class="space-y-3 pt-4 border-t border-[var(--border-hairline)]">
+        <h2 class="text-base font-semibold text-[var(--text-primary)]">
+          {isKo ? `관련 기술 블로그 연재 (${relatedPosts.length}편)` : `Related engineering notes (${relatedPosts.length} posts)`}
+        </h2>
+        <ul class="divide-y divide-[var(--border-hairline)]">
+          {relatedPosts.map((post) => (
+            <li class="py-2.5">
+              <a href={`/blog/${post.id}`} class="group flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                <time class="font-mono text-xs text-[var(--text-tertiary)] shrink-0">
+                  {post.data.pubDate.toISOString().slice(0, 10)}
+                </time>
+                <span class="text-sm text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                  {post.data.title}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </div>
+</BaseLayout>

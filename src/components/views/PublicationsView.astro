@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PublicationList from '../react/PublicationList';
+import { PUBLICATIONS, PUB_STATS } from '../../data/publications';
+import { SITE } from '../../data/site';
+import type { Locale } from '../../data/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const isKo = locale === 'ko';
+---
+
+<BaseLayout
+  locale={locale}
+  title={isKo ? '논문 및 특허' : 'Publications & Patents'}
+  description={
+    isKo
+      ? '박범도의 국제·국내 학술논문 20편(AAAI, IEEE T-QE, IJCAI, KDD, SCIE, IEIE, KICS) 및 등록특허 1건 목록과 DBpia·BibTeX 링크.'
+      : '20 international and domestic publications (AAAI, IEEE T-QE, IJCAI, KDD, MDPI Energies, IEIE, KICS) and 1 granted patent by Beomdo Park.'
+  }
+>
+  <header class="pb-7 border-b border-[var(--border-hairline)] space-y-4">
+    <div class="flex flex-wrap items-baseline justify-between gap-3">
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+        {isKo ? '논문 및 특허' : 'Publications & Patents'}
+      </h1>
+      <div class="flex flex-wrap gap-3 text-xs font-medium">
+        <a
+          href={SITE.links.dbpia}
+          target="_blank"
+          rel="noreferrer"
+          class="rounded-md border border-[var(--accent-primary)]/40 bg-[var(--accent-primary-soft)] px-2.5 py-1 text-[var(--accent-primary)] hover:opacity-85"
+        >
+          {isKo ? 'DBpia 저자 페이지 ↗' : 'DBpia Profile ↗'}
+        </a>
+        <a
+          href={SITE.links.scholar}
+          target="_blank"
+          rel="noreferrer"
+          class="rounded-md border border-[var(--border-hairline)] px-2.5 py-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        >
+          Google Scholar ↗
+        </a>
+        <a
+          href={SITE.links.orcid}
+          target="_blank"
+          rel="noreferrer"
+          class="rounded-md border border-[var(--border-hairline)] px-2.5 py-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+        >
+          ORCID ↗
+        </a>
+      </div>
+    </div>
+
+    <p class="text-sm text-[var(--text-secondary)] leading-relaxed max-w-[68ch]">
+      {isKo
+        ? `총 ${PUB_STATS.totalPapers}편(국제 ${PUB_STATS.international} · 국내 ${PUB_STATS.domestic}, 1저자 ${PUB_STATS.firstAuthor}편, SCIE ${PUB_STATS.scie}편)과 등록특허 ${PUB_STATS.grantedPatents}건입니다. 국내 학회 논문은 DBpia 검색 링크와 BibTeX 인용을 함께 제공합니다.`
+        : `${PUB_STATS.totalPapers} papers (${PUB_STATS.international} international, ${PUB_STATS.domestic} domestic; ${PUB_STATS.firstAuthor} first-author; ${PUB_STATS.scie} SCIE) and ${PUB_STATS.grantedPatents} granted Korean patent. Domestic proceedings include direct DBpia lookup links and BibTeX.`}
+    </p>
+  </header>
+
+  <div class="pt-7">
+    <PublicationList client:load publications={PUBLICATIONS} locale={locale} />
+  </div>
+</BaseLayout>

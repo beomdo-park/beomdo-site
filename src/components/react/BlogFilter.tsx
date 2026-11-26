@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import type { Locale } from '../../data/i18n';
 
 export interface BlogCardItem {
   id: string;
@@ -15,9 +16,10 @@ export interface BlogCardItem {
 
 interface Props {
   posts: BlogCardItem[];
+  locale?: Locale;
 }
 
-export default function BlogFilter({ posts }: Props) {
+export default function BlogFilter({ posts, locale = 'ko' }: Props) {
   const [activeFilter, setActiveFilter] = useState<string>('ALL');
 
   useEffect(() => {
@@ -46,7 +48,7 @@ export default function BlogFilter({ posts }: Props) {
     }
     return Array.from(map.entries())
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 6);
+      .slice(0, 5);
   }, [posts]);
 
   const filtered = useMemo(() => {
@@ -64,6 +66,10 @@ export default function BlogFilter({ posts }: Props) {
     return posts;
   }, [posts, activeFilter]);
 
+  const allLabel = locale === 'ko' ? `전체 (${posts.length})` : `All (${posts.length})`;
+  const seriesPrefix = locale === 'ko' ? '시리즈' : 'Series';
+  const minRead = locale === 'ko' ? '분' : 'min';
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-1.5">
@@ -72,11 +78,11 @@ export default function BlogFilter({ posts }: Props) {
           onClick={() => setActiveFilter('ALL')}
           className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer ${
             activeFilter === 'ALL'
-              ? 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] border border-[var(--accent-primary)]/40'
-              : 'border border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              ? 'bg-[var(--text-primary)] text-[var(--bg-canvas)]'
+              : 'border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
-          All ({posts.length})
+          {allLabel}
         </button>
 
         {seriesCounts.map(([name, count]) => {
@@ -88,11 +94,11 @@ export default function BlogFilter({ posts }: Props) {
               onClick={() => setActiveFilter(key)}
               className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer ${
                 activeFilter === key
-                  ? 'bg-[var(--accent-primary-soft)] text-[var(--accent-primary)] border border-[var(--accent-primary)]/40'
-                  : 'border border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                  ? 'bg-[var(--text-primary)] text-[var(--bg-canvas)]'
+                  : 'border border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
-              Series: {name} ({count})
+              {seriesPrefix}: {name} ({count})
             </button>
           );
         })}
@@ -106,8 +112,8 @@ export default function BlogFilter({ posts }: Props) {
               onClick={() => setActiveFilter(key)}
               className={`rounded-md px-2.5 py-1 text-xs transition-colors cursor-pointer ${
                 activeFilter === key
-                  ? 'bg-[var(--bg-subtle)] font-medium text-[var(--text-primary)] border border-[var(--border-strong)]'
-                  : 'border border-[var(--border-hairline)] bg-[var(--bg-surface)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
+                  ? 'bg-[var(--bg-subtle)] font-semibold text-[var(--text-primary)] border border-[var(--border-strong)]'
+                  : 'border border-[var(--border-hairline)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)]'
               }`}
             >
               {cat} ({count})
@@ -116,45 +122,32 @@ export default function BlogFilter({ posts }: Props) {
         })}
       </div>
 
-      <ul className="divide-y divide-[var(--border-hairline)] border-t border-b border-[var(--border-hairline)]">
+      <ul className="divide-y divide-[var(--border-hairline)] border-t border-[var(--border-hairline)]">
         {filtered.map((post) => (
           <li key={post.id} className="py-5">
-            <a href={`/blog/${post.id}`} className="group block space-y-2">
+            <a href={`/blog/${post.id}`} className="group block space-y-1.5">
               <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-[var(--text-tertiary)]">
                 <time dateTime={post.pubDate} className="tabular-nums">
                   {post.pubDate}
                 </time>
                 <span>·</span>
-                <span>{post.readingMinutes} min read</span>
+                <span>{post.readingMinutes} {minRead}</span>
                 {post.series && (
-                  <span className="rounded border border-[var(--accent-primary)]/35 bg-[var(--accent-primary-soft)] px-1.5 py-0.5 text-[11px] text-[var(--accent-primary)]">
+                  <span className="rounded bg-[var(--accent-primary-soft)] px-1.5 py-0.5 text-[11px] text-[var(--accent-primary)]">
                     {post.series}
                     {post.seriesOrder ? ` #${post.seriesOrder}` : ''}
                   </span>
                 )}
               </div>
 
-              <h2 className="text-lg font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors leading-snug">
+              <h2 className="text-base sm:text-lg font-semibold text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors leading-snug">
                 {post.title}
               </h2>
 
               {post.description && (
-                <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-[74ch] line-clamp-2">
+                <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-[70ch] line-clamp-2">
                   {post.description}
                 </p>
-              )}
-
-              {post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-0.5">
-                  {post.tags.slice(0, 5).map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded border border-[var(--border-hairline)] bg-[var(--bg-subtle)]/60 px-2 py-0.5 font-mono text-[11px] text-[var(--text-tertiary)]"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
               )}
             </a>
           </li>

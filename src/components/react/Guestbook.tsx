@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MessageSquare, Send } from 'lucide-react';
+import type { Locale } from '../../data/i18n';
 
 interface Entry {
   id: number;
@@ -9,7 +10,55 @@ interface Entry {
   created_at: string;
 }
 
-export default function Guestbook() {
+interface Props {
+  locale?: Locale;
+}
+
+const COPY = {
+  ko: {
+    formTitle: '메시지 남기기',
+    formDesc: 'Cloudflare D1 데이터베이스에 저장됩니다. 연구 문의, QEnvS/ROQET 피드백, 가벼운 인사 모두 환영합니다.',
+    nameLabel: '이름 *',
+    namePh: '이름 또는 닉네임',
+    affLabel: '소속 / 역할 (선택)',
+    affPh: '연구실, 학교, 회사 등',
+    msgLabel: '내용 *',
+    msgPh: '한국어 또는 영어로 편하게 남겨주세요.',
+    submit: '방명록 등록',
+    submitting: '등록 중…',
+    recent: '최근 방명록',
+    count: (n: number) => `${n}건`,
+    loading: '불러오는 중…',
+    empty: '아직 등록된 글이 없습니다. 첫 번째 인사를 남겨보세요.',
+    posted: 'Cloudflare D1 방명록에 등록되었습니다.',
+    errShort: '이름과 2자 이상의 내용을 입력해 주세요.',
+    errLoad: '방명록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.',
+    errNet: '네트워크 오류가 발생했습니다. 다시 시도해 주세요.',
+  },
+  en: {
+    formTitle: 'Leave a note',
+    formDesc: 'Stored in Cloudflare D1 at the edge. Research inquiries, QEnvS/ROQET feedback, or a quick hello are welcome.',
+    nameLabel: 'Name *',
+    namePh: 'Your name or handle',
+    affLabel: 'Affiliation / Role (optional)',
+    affPh: 'Lab, university, or company',
+    msgLabel: 'Message *',
+    msgPh: 'Write a message in English or Korean...',
+    submit: 'Post note',
+    submitting: 'Posting…',
+    recent: 'Recent notes',
+    count: (n: number) => `${n} ${n === 1 ? 'entry' : 'entries'}`,
+    loading: 'Loading entries…',
+    empty: 'No notes yet. Be the first to sign the guestbook.',
+    posted: 'Posted to the Cloudflare D1 guestbook.',
+    errShort: 'Please enter your name and a message (at least 2 characters).',
+    errLoad: 'Could not load guestbook entries right now.',
+    errNet: 'Network error while posting. Please try again.',
+  },
+} as const;
+
+export default function Guestbook({ locale = 'ko' }: Props) {
+  const L = COPY[locale];
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +66,7 @@ export default function Guestbook() {
   const [name, setName] = useState('');
   const [affiliation, setAffiliation] = useState('');
   const [message, setMessage] = useState('');
-  const [website, setWebsite] = useState(''); // honeypot
+  const [website, setWebsite] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -29,7 +78,7 @@ export default function Guestbook() {
       const data = (await res.json()) as { entries: Entry[] };
       setEntries(data.entries ?? []);
     } catch {
-      setError('Could not load guestbook entries right now. Please try again in a moment.');
+      setError(L.errLoad);
     } finally {
       setLoading(false);
     }
@@ -45,7 +94,7 @@ export default function Guestbook() {
     setError(null);
 
     if (name.trim().length < 1 || message.trim().length < 2) {
-      setError('Please enter your name and a message (at least 2 characters).');
+      setError(L.errShort);
       return;
     }
 
@@ -61,18 +110,18 @@ export default function Guestbook() {
           website,
         }),
       });
-      const payload = (await res.json()) as { error?: string; entry?: Entry };
+      const payload = (await res.json()) as { error?: string };
       if (!res.ok) {
-        setError(payload.error || 'Could not save your note.');
+        setError(payload.error || L.errNet);
       } else {
         setName('');
         setAffiliation('');
         setMessage('');
-        setNotice('Posted to the Cloudflare D1 guestbook.');
+        setNotice(L.posted);
         await fetchEntries();
       }
     } catch {
-      setError('Network error while posting. Please try again.');
+      setError(L.errNet);
     } finally {
       setSubmitting(false);
     }
@@ -80,34 +129,22 @@ export default function Guestbook() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="lg:col-span-5 rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-5 space-y-4"
       >
         <div>
-          <h2 className="text-base font-semibold text-[var(--text-primary)]">Leave a note</h2>
-          <p className="mt-1 text-xs text-[var(--text-secondary)]">
-            Stored directly in Cloudflare D1 at the edge. Research inquiries, feedback on QEnvS/ROQET, or a quick hello are all welcome.
-          </p>
+          <h2 className="text-base font-semibold text-[var(--text-primary)]">{L.formTitle}</h2>
+          <p className="mt-1 text-xs text-[var(--text-secondary)] leading-relaxed">{L.formDesc}</p>
         </div>
 
-        {/* Honeypot field hidden from real users */}
         <div className="hidden" aria-hidden="true">
           <label htmlFor="gb-website">Website</label>
-          <input
-            id="gb-website"
-            tabIndex={-1}
-            autoComplete="off"
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
-          />
+          <input id="gb-website" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="gb-name" className="block text-xs font-medium text-[var(--text-secondary)]">
-            Name *
-          </label>
+          <label htmlFor="gb-name" className="block text-xs font-medium text-[var(--text-secondary)]">{L.nameLabel}</label>
           <input
             id="gb-name"
             type="text"
@@ -115,31 +152,27 @@ export default function Guestbook() {
             maxLength={40}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Your name or handle"
-            className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-subtle)]/60 px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)] focus:outline-none"
+            placeholder={L.namePh}
+            className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-subtle)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)] focus:outline-none"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="gb-aff" className="block text-xs font-medium text-[var(--text-secondary)]">
-            Affiliation / Role (optional)
-          </label>
+          <label htmlFor="gb-aff" className="block text-xs font-medium text-[var(--text-secondary)]">{L.affLabel}</label>
           <input
             id="gb-aff"
             type="text"
             maxLength={60}
             value={affiliation}
             onChange={(e) => setAffiliation(e.target.value)}
-            placeholder="Lab, university, or company"
-            className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-subtle)]/60 px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)] focus:outline-none"
+            placeholder={L.affPh}
+            className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-subtle)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)] focus:outline-none"
           />
         </div>
 
         <div className="space-y-1.5">
           <div className="flex justify-between">
-            <label htmlFor="gb-msg" className="block text-xs font-medium text-[var(--text-secondary)]">
-              Message *
-            </label>
+            <label htmlFor="gb-msg" className="block text-xs font-medium text-[var(--text-secondary)]">{L.msgLabel}</label>
             <span className="font-mono text-[11px] text-[var(--text-tertiary)]">{message.length}/400</span>
           </div>
           <textarea
@@ -149,8 +182,8 @@ export default function Guestbook() {
             maxLength={400}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Write a message in English or Korean..."
-            className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-subtle)]/60 px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)] focus:outline-none resize-y"
+            placeholder={L.msgPh}
+            className="w-full rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-subtle)] px-3 py-2 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--accent-primary)] focus:outline-none resize-y"
           />
         </div>
 
@@ -168,44 +201,34 @@ export default function Guestbook() {
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--text-primary)] px-4 py-2.5 text-sm font-medium text-[var(--bg-canvas)] hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer"
         >
           <Send className="h-4 w-4" />
-          <span>{submitting ? 'Posting…' : 'Post note'}</span>
+          <span>{submitting ? L.submitting : L.submit}</span>
         </button>
       </form>
 
-      {/* Entries feed */}
       <div className="lg:col-span-7 space-y-3">
         <div className="flex items-center justify-between border-b border-[var(--border-hairline)] pb-2">
           <div className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
             <MessageSquare className="h-4 w-4 text-[var(--accent-primary)]" />
-            <span>Recent notes</span>
+            <span>{L.recent}</span>
           </div>
-          <span className="font-mono text-xs text-[var(--text-tertiary)]">
-            {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
-          </span>
+          <span className="font-mono text-xs text-[var(--text-tertiary)]">{L.count(entries.length)}</span>
         </div>
 
         {loading ? (
-          <div className="py-10 text-center text-sm text-[var(--text-tertiary)]">Loading entries…</div>
+          <div className="py-10 text-center text-sm text-[var(--text-tertiary)]">{L.loading}</div>
         ) : entries.length === 0 ? (
-          <div className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-8 text-center text-sm text-[var(--text-secondary)]">
-            No notes yet. Be the first to sign the guestbook.
-          </div>
+          <div className="py-8 text-center text-sm text-[var(--text-secondary)]">{L.empty}</div>
         ) : (
-          <ul className="space-y-3">
+          <ul className="divide-y divide-[var(--border-hairline)]">
             {entries.map((entry) => (
-              <li
-                key={entry.id}
-                className="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface)] p-4 space-y-2"
-              >
+              <li key={entry.id} className="py-4 space-y-1.5">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <div className="flex flex-wrap items-baseline gap-2">
                     <span className="text-sm font-semibold text-[var(--text-primary)]">{entry.name}</span>
-                    {entry.affiliation && (
-                      <span className="text-xs text-[var(--text-tertiary)]">{entry.affiliation}</span>
-                    )}
+                    {entry.affiliation && <span className="text-xs text-[var(--text-tertiary)]">{entry.affiliation}</span>}
                   </div>
                   <time className="font-mono text-[11px] text-[var(--text-tertiary)] tabular-nums">
                     {new Date(entry.created_at).toLocaleDateString('en-CA')}

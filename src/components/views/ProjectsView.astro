@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { PROJECTS } from '../../data/projects';
+import { getLocalePath, type Locale } from '../../data/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const isKo = locale === 'ko';
+---
+
+<BaseLayout
+  locale={locale}
+  title={isKo ? '프로젝트' : 'Projects'}
+  description={
+    isKo
+      ? 'QEnvS 오픈소스 양자 제어 환경, ROQET QEC 온칩 디코더 SoC, Kaggle VQCC 등 직접 설계·구현한 프로젝트 및 인터랙티브 데모.'
+      : 'Engineered systems and interactive demos: QEnvS, ROQET On-Device QEC SoC, Kaggle VQCC, and Industrial Power Anomaly Detection.'
+  }
+>
+  <header class="pb-7 border-b border-[var(--border-hairline)] space-y-2.5">
+    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+      {isKo ? '프로젝트' : 'Projects'}
+    </h1>
+    <p class="text-sm sm:text-base text-[var(--text-secondary)] max-w-[66ch] leading-relaxed">
+      {isKo
+        ? '직접 설계·구현하고 물리·하드웨어 수준에서 검증한 시스템입니다. QEnvS와 ROQET 상세 페이지 안에는 브라우저에서 직접 실험해 볼 수 있는 인터랙티브 탐색기가 내장되어 있습니다.'
+        : 'Systems designed, implemented, and validated end-to-end. Open QEnvS or ROQET to use the embedded interactive physics and QEC experiment explorers.'}
+    </p>
+  </header>
+
+  <div class="divide-y divide-[var(--border-hairline)]">
+    {PROJECTS.map((proj) => (
+      <article class="py-8 space-y-4">
+        <div class="flex flex-wrap items-baseline justify-between gap-2">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="text-xl font-semibold text-[var(--text-primary)]">
+                <a href={getLocalePath(locale, `/projects/${proj.slug}`)} class="hover:text-[var(--accent-primary)] transition-colors">
+                  {proj.name}
+                </a>
+              </h2>
+              {proj.labTab && (
+                <span class="rounded bg-[var(--accent-primary-soft)] px-2 py-0.5 font-mono text-[11px] font-medium text-[var(--accent-primary)]">
+                  {isKo ? '인터랙티브 데모 포함' : 'Interactive demo'}
+                </span>
+              )}
+            </div>
+            <p class="mt-1 text-sm text-[var(--text-secondary)]">{proj.tagline[locale]}</p>
+          </div>
+          <span class="font-mono text-xs text-[var(--text-tertiary)]">
+            {proj.period} · {isKo ? proj.statusKo : proj.statusEn}
+          </span>
+        </div>
+
+        <p class="text-sm leading-relaxed text-[var(--text-secondary)] max-w-[74ch]">{proj.summary[locale]}</p>
+
+        <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+          {proj.metrics.map((m) => (
+            <div class="rounded-lg border border-[var(--border-hairline)] bg-[var(--bg-subtle)]/55 px-3 py-2.5">
+              <dt class="text-[11px] text-[var(--text-tertiary)]">{isKo ? m.labelKo : m.labelEn}</dt>
+              <dd class="mt-0.5 font-mono text-sm font-semibold text-[var(--text-primary)]">{m.value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-1 text-xs">
+          <div class="flex flex-wrap gap-1.5">
+            {proj.stack.map((s) => (
+              <span class="font-mono text-[11px] text-[var(--text-tertiary)]">{s}</span>
+            ))}
+          </div>
+          <a
+            href={getLocalePath(locale, `/projects/${proj.slug}`)}
+            class="font-medium text-[var(--accent-primary)] hover:underline"
+          >
+            {isKo ? '아키텍처 & 데모 보기 →' : 'Architecture & demo →'}
+          </a>
+        </div>
+      </article>
+    ))}
+  </div>
+</BaseLayout>

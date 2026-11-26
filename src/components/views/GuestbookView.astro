@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Guestbook from '../react/Guestbook';
+import type { Locale } from '../../data/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const isKo = locale === 'ko';
+---
+
+<BaseLayout
+  locale={locale}
+  title={isKo ? '방명록' : 'Guestbook'}
+  description={isKo ? 'Cloudflare Workers + D1 기반 방명록입니다.' : 'Edge-backed guestbook powered by Cloudflare Workers and D1.'}
+>
+  <header class="pb-7 border-b border-[var(--border-hairline)] space-y-2">
+    <div class="flex flex-wrap items-center gap-2">
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--text-primary)]">
+        {isKo ? '방명록' : 'Guestbook'}
+      </h1>
+      <span class="rounded bg-[var(--accent-primary-soft)] px-2 py-0.5 font-mono text-xs text-[var(--accent-primary)]">
+        Cloudflare D1
+      </span>
+    </div>
+    <p class="text-sm text-[var(--text-secondary)] max-w-[64ch]">
+      {isKo
+        ? 'QEnvS, ROQET, 논문이나 블로그 글에 대한 질문·피드백, 혹은 가벼운 방문 인사를 남겨주세요.'
+        : 'Leave a note, ask about QEnvS or ROQET, or share feedback on any paper or post.'}
+    </p>
+  </header>
+
+  <div class="pt-7">
+    <Guestbook client:load locale={locale} />
+  </div>
+</BaseLayout>

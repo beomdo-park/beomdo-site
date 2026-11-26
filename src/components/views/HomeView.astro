@@ -1,0 +1,264 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../data/site';
+import { PROFILE } from '../../data/profile';
+import { PUBLICATIONS, PUB_STATS } from '../../data/publications';
+import { PROJECTS } from '../../data/projects';
+import { UI_STRINGS, getLocalePath, type Locale } from '../../data/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const isKo = locale === 'ko';
+const t = UI_STRINGS[locale];
+
+const featuredPubs = PUBLICATIONS.filter((p) => p.featured).slice(0, 6);
+const featuredProjects = PROJECTS.filter((p) => p.featured);
+const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 4);
+---
+
+<BaseLayout locale={locale}>
+  <div class="space-y-14">
+    <!-- 1. Academic Researcher Profile Header (Clarity / Karpathy Minimal Rhythm) -->
+    <section class="space-y-6 pb-10 border-b border-[var(--border-hairline)]">
+      <div class="space-y-2">
+        <p class="text-xs font-mono text-[var(--accent-primary)]">
+          {SITE.affiliation[locale]}
+        </p>
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)]">
+          {isKo ? '박범도' : 'Beomdo Park'}
+          <span class="ml-2 text-lg sm:text-xl font-normal text-[var(--text-tertiary)]">
+            {isKo ? 'Beomdo Park' : '박범도'}
+          </span>
+        </h1>
+      </div>
+
+      <p class="text-[15.5px] sm:text-base leading-[1.8] text-[var(--text-secondary)] max-w-[68ch]">
+        {PROFILE.bio[locale]}
+      </p>
+
+      <!-- Minimal Text Links (No noisy social icon clutter) -->
+      <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+        <a href={SITE.links.github} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors">
+          GitHub
+        </a>
+        <a href={SITE.links.scholar} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors">
+          Google Scholar
+        </a>
+        <a href={SITE.links.dbpia} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors">
+          DBpia
+        </a>
+        <a href={SITE.links.orcid} target="_blank" rel="noreferrer" class="font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors">
+          ORCID
+        </a>
+        <a href={getLocalePath(locale, '/cv')} class="font-medium text-[var(--text-primary)] hover:text-[var(--accent-primary)] underline decoration-[var(--border-strong)] underline-offset-4 transition-colors">
+          {isKo ? '이력서 (CV)' : 'CV'}
+        </a>
+        <a href={`mailto:${SITE.email}`} class="font-mono text-xs text-[var(--text-tertiary)] hover:text-[var(--accent-primary)] transition-colors">
+          {SITE.email}
+        </a>
+      </div>
+
+      <!-- Quiet Single-Line Fact Summary -->
+      <dl class="flex flex-wrap gap-x-8 gap-y-3 pt-2 text-xs text-[var(--text-tertiary)]">
+        <div>
+          <dt class="inline">{isKo ? '논문' : 'Papers'}</dt>
+          <dd class="inline ml-1.5 font-mono font-semibold text-[var(--text-primary)]">
+            {PUB_STATS.totalPapers} ({isKo ? `1저자 ${PUB_STATS.firstAuthor}` : `${PUB_STATS.firstAuthor} 1st`})
+          </dd>
+        </div>
+        <div>
+          <dt class="inline">{isKo ? '등록특허' : 'Patent'}</dt>
+          <dd class="inline ml-1.5 font-mono font-semibold text-[var(--text-primary)]">KR 10-3019388</dd>
+        </div>
+        <div>
+          <dt class="inline">{isKo ? '오픈소스' : 'Open Source'}</dt>
+          <dd class="inline ml-1.5 font-mono font-semibold text-[var(--accent-primary)]">
+            <a href={SITE.links.qenvsPypi} target="_blank" rel="noreferrer" class="hover:underline">qenvs (PyPI)</a>
+          </dd>
+        </div>
+        <div>
+          <dt class="inline">{isKo ? '온칩 QEC' : 'On-Chip QEC'}</dt>
+          <dd class="inline ml-1.5 font-mono font-semibold text-[var(--signal-positive)]">0.34 µs · 26.7 KB</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- 2. Research Focus (Typographic Rows, Zero Card Noise) -->
+    <section id="research" class="space-y-5 scroll-mt-20">
+      <h2 class="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{t.researchFocus}</h2>
+      <div class="space-y-5">
+        {PROFILE.researchFocus.map((rf) => (
+          <div class="border-l-2 border-[var(--border-strong)] pl-4 space-y-1">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 class="text-[15px] font-semibold text-[var(--text-primary)]">
+                {isKo ? rf.titleKo : rf.titleEn}
+              </h3>
+              <span class="font-mono text-[11px] text-[var(--text-tertiary)]">{rf.meta}</span>
+            </div>
+            <p class="text-sm leading-relaxed text-[var(--text-secondary)] max-w-[70ch]">
+              {isKo ? rf.descKo : rf.descEn}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 3. Selected Publications & Patent -->
+    <section class="space-y-5">
+      <div class="flex items-baseline justify-between gap-4 border-b border-[var(--border-hairline)] pb-2.5">
+        <h2 class="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{t.selectedPubs}</h2>
+        <a
+          href={getLocalePath(locale, '/publications')}
+          class="text-xs font-medium text-[var(--accent-primary)] hover:underline shrink-0"
+        >
+          {t.allPublications} →
+        </a>
+      </div>
+
+      <ul class="divide-y divide-[var(--border-hairline)]">
+        {featuredPubs.map((pub) => {
+          const href = pub.url || pub.dbpiaUrl;
+          return (
+            <li class="py-3.5 space-y-1">
+              <div class="flex flex-wrap items-center gap-2 text-xs">
+                <span class="font-mono font-semibold text-[var(--accent-primary)]">{pub.venueShort}</span>
+                <span class="font-mono text-[var(--text-tertiary)]">{pub.year}</span>
+                {pub.indexing && (
+                  <span class="rounded bg-[var(--bg-subtle)] border border-[var(--border-hairline)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-secondary)]">
+                    {pub.indexing}
+                  </span>
+                )}
+                <span class={pub.isFirstAuthor ? 'font-medium text-[var(--signal-positive)]' : 'text-[var(--text-tertiary)]'}>
+                  {isKo ? pub.roleKo : pub.roleEn}
+                </span>
+                {pub.dbpiaUrl && (
+                  <a
+                    href={pub.dbpiaUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    class="rounded border border-[var(--accent-primary)]/35 bg-[var(--accent-primary-soft)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--accent-primary)] hover:opacity-80"
+                  >
+                    DBpia
+                  </a>
+                )}
+                {pub.url && (
+                  <a
+                    href={pub.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    class="rounded border border-[var(--border-hairline)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  >
+                    {pub.urlLabel || 'Paper'}
+                  </a>
+                )}
+              </div>
+              <h3 class="text-[14.5px] font-medium leading-snug text-[var(--text-primary)]">
+                {href ? (
+                  <a href={href} target="_blank" rel="noreferrer" class="hover:text-[var(--accent-primary)] transition-colors">
+                    {pub.title}
+                  </a>
+                ) : (
+                  pub.title
+                )}
+              </h3>
+              <p class="text-xs text-[var(--text-tertiary)]">
+                {isKo ? pub.authorsKo : pub.authorsEn}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+
+    <!-- 4. Selected Engineering Projects -->
+    <section class="space-y-5">
+      <div class="flex items-baseline justify-between gap-4 border-b border-[var(--border-hairline)] pb-2.5">
+        <h2 class="text-lg font-semibold tracking-tight text-[var(--text-primary)]">{t.selectedProjects}</h2>
+        <a
+          href={getLocalePath(locale, '/projects')}
+          class="text-xs font-medium text-[var(--accent-primary)] hover:underline shrink-0"
+        >
+          {t.allProjects} →
+        </a>
+      </div>
+
+      <div class="divide-y divide-[var(--border-hairline)]">
+        {featuredProjects.map((proj) => (
+          <article class="py-5 first:pt-1 grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+            <div class="md:col-span-4 space-y-1">
+              <div class="flex items-baseline gap-2">
+                <h3 class="text-base font-semibold text-[var(--text-primary)]">
+                  <a href={getLocalePath(locale, `/projects/${proj.slug}`)} class="hover:text-[var(--accent-primary)] transition-colors">
+                    {proj.name}
+                  </a>
+                </h3>
+                <span class="font-mono text-[11px] text-[var(--text-tertiary)]">{proj.period}</span>
+              </div>
+              <p class="text-xs text-[var(--text-tertiary)]">{isKo ? proj.statusKo : proj.statusEn}</p>
+            </div>
+            <div class="md:col-span-8 space-y-2.5">
+              <p class="text-sm leading-relaxed text-[var(--text-secondary)]">
+                {proj.summary[locale]}
+              </p>
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+                <a
+                  href={getLocalePath(locale, `/projects/${proj.slug}`)}
+                  class="font-medium text-[var(--accent-primary)] hover:underline"
+                >
+                  {isKo ? '상세 및 인터랙티브 데모' : 'Case study & interactive demo'} →
+                </a>
+                {proj.links.slice(0, 2).map((l) => (
+                  <a
+                    href={l.href}
+                    target={l.href.startsWith('http') ? '_blank' : undefined}
+                    rel={l.href.startsWith('http') ? 'noreferrer' : undefined}
+                    class="text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+                  >
+                    {isKo ? l.labelKo : l.labelEn}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 5. Clearly Separated Blog Box -->
+    <section class="rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-subtle)]/65 p-5 sm:p-6 space-y-4">
+      <div class="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h2 class="text-base font-semibold text-[var(--text-primary)]">{t.recentWriting}</h2>
+          <p class="text-xs text-[var(--text-tertiary)] mt-0.5">{t.recentWritingDesc}</p>
+        </div>
+        <a
+          href={getLocalePath(locale, '/blog')}
+          class="text-xs font-medium text-[var(--accent-primary)] hover:underline"
+        >
+          {t.allPosts} →
+        </a>
+      </div>
+
+      <ul class="divide-y divide-[var(--border-hairline)]">
+        {recentPosts.map((post) => (
+          <li class="py-2.5 first:pt-0 last:pb-0">
+            <a href={`/blog/${post.id}`} class="group flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+              <time datetime={post.data.pubDate.toISOString()} class="font-mono text-xs tabular-nums text-[var(--text-tertiary)] shrink-0">
+                {post.data.pubDate.toISOString().slice(0, 10)}
+              </time>
+              <span class="text-sm text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                {post.data.title}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>

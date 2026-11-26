@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
+import type { Locale } from '../../data/i18n';
 
 interface PagefindResult {
   id: string;
-  data: () => Promise<{
-    url: string;
-    excerpt: string;
-    meta?: { title?: string };
-  }>;
+  data: () => Promise<{ url: string; excerpt: string; meta?: { title?: string } }>;
 }
 
 interface PagefindInstance {
@@ -20,7 +17,7 @@ interface SearchHit {
   excerpt: string;
 }
 
-export default function SearchModal() {
+export default function SearchModal({ locale = 'ko' }: { locale?: Locale }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [hits, setHits] = useState<SearchHit[]>([]);
@@ -50,9 +47,7 @@ export default function SearchModal() {
         .then((mod) => {
           pagefindRef.current = mod as PagefindInstance;
         })
-        .catch(() => {
-          setStatus('unavailable');
-        });
+        .catch(() => setStatus('unavailable'));
     }
   }, [open]);
 
@@ -74,11 +69,7 @@ export default function SearchModal() {
         const top = await Promise.all(
           res.results.slice(0, 8).map(async (r) => {
             const d = await r.data();
-            return {
-              url: d.url,
-              title: d.meta?.title || d.url,
-              excerpt: d.excerpt,
-            };
+            return { url: d.url, title: d.meta?.title || d.url, excerpt: d.excerpt };
           })
         );
         if (!cancelled) {
@@ -96,27 +87,26 @@ export default function SearchModal() {
     };
   }, [query, open]);
 
+  const isKo = locale === 'ko';
+
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Search site"
-        className="inline-flex h-8 items-center gap-2 rounded-md border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-2.5 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors cursor-pointer"
+        aria-label={isKo ? '사이트 검색' : 'Search site'}
+        className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[var(--border-hairline)] bg-[var(--bg-surface)] px-2 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors cursor-pointer"
       >
         <Search className="h-3.5 w-3.5" />
-        <span className="hidden sm:inline">Search</span>
-        <kbd className="hidden sm:inline rounded border border-[var(--border-hairline)] bg-[var(--bg-subtle)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-tertiary)]">
-          Ctrl K
-        </kbd>
+        <kbd className="hidden sm:inline font-mono text-[10px] text-[var(--text-tertiary)]">Ctrl K</kbd>
       </button>
 
       {open && (
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Search site"
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/55 backdrop-blur-xs p-4 pt-[12vh]"
+          aria-label={isKo ? '사이트 검색' : 'Search site'}
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-xs p-4 pt-[12vh]"
           onClick={(e) => {
             if (e.target === e.currentTarget) setOpen(false);
           }}
@@ -129,7 +119,7 @@ export default function SearchModal() {
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search posts, publications, QEnvS, ROQET, QEC..."
+                placeholder={isKo ? '논문, 프로젝트, 블로그 글 검색 (QEnvS, ROQET, 양자 배터리...)' : 'Search papers, projects, posts (QEnvS, ROQET, QEC...)'}
                 className="w-full bg-transparent text-sm text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none"
               />
               <button
@@ -145,14 +135,14 @@ export default function SearchModal() {
             <div className="max-h-[55vh] overflow-y-auto p-2">
               {status === 'unavailable' && (
                 <p className="px-3 py-6 text-center text-xs text-[var(--text-tertiary)]">
-                  Search index is built during production build (`pnpm build`).
+                  {isKo ? '검색 인덱스는 프로덕션 빌드 후 활성화됩니다.' : 'Search index is available after production build.'}
                 </p>
               )}
               {status === 'idle' && !query && (
-                <div className="px-3 py-5 text-xs text-[var(--text-tertiary)] space-y-2">
-                  <p>Try searching for:</p>
+                <div className="px-3 py-4 text-xs text-[var(--text-tertiary)] space-y-2">
+                  <p>{isKo ? '추천 검색어:' : 'Suggested:'}</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {['QEnvS', 'ROQET', 'Surface Code', 'INT8 PTQ', 'Quantum Battery', 'AAAI'].map((term) => (
+                    {['QEnvS', 'ROQET', '양자 배터리', 'INT8 PTQ', 'AAAI', 'DBpia'].map((term) => (
                       <button
                         key={term}
                         type="button"
@@ -166,11 +156,13 @@ export default function SearchModal() {
                 </div>
               )}
               {status === 'loading' && (
-                <p className="px-3 py-6 text-center text-xs text-[var(--text-tertiary)]">Searching…</p>
+                <p className="px-3 py-6 text-center text-xs text-[var(--text-tertiary)]">
+                  {isKo ? '검색 중…' : 'Searching…'}
+                </p>
               )}
               {status === 'done' && hits.length === 0 && (
                 <p className="px-3 py-6 text-center text-xs text-[var(--text-tertiary)]">
-                  No matches for “{query}”.
+                  {isKo ? `“${query}”에 대한 검색 결과가 없습니다.` : `No matches for “${query}”.`}
                 </p>
               )}
               {hits.length > 0 && (

@@ -1,5 +1,11 @@
-# Preserve legacy Quarto GitHub Pages URLs with 301 permanent redirects
-/about.html /about/ 301
+# Legacy Quarto & v1 route redirects
+/about.html /cv/ 301
+/about /cv/ 301
+/about/ /cv/ 301
+/research /#research 301
+/research/ /#research 301
+/lab /projects/qenvs/ 301
+/lab/ /projects/qenvs/ 301
 /index.html / 301
 /posts/:slug/index.html /blog/:slug/ 301
 /posts/:slug/ /blog/:slug/ 301

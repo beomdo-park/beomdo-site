@@ -8,8 +8,8 @@ export async function GET(context: APIContext) {
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
   );
   return rss({
-    title: SITE.title,
-    description: SITE.description,
+    title: SITE.title.ko,
+    description: SITE.description.ko,
     site: context.site ?? 'https://beomdo-site.pbeomdo.workers.dev',
     items: posts.map((post) => ({
       title: post.data.title,

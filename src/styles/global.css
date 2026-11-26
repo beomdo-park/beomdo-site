@@ -3,46 +3,45 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Crisp Academic Clarity Palette — Clean Archival Light default + Mineral Dark mode */
 :root {
-  --bg-canvas: #F8FAFC;
+  --bg-canvas: #FFFFFF;
   --bg-surface: #FFFFFF;
-  --bg-subtle: #F1F5F9;
-  --bg-elevated: #FFFFFF;
-  --border-hairline: #E2E8F0;
+  --bg-subtle: #F6F8FA;
+  --border-hairline: #E5E7EB;
   --border-strong: #CBD5E1;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-tertiary: #64748B;
-  --accent-primary: #0284C7;
-  --accent-primary-soft: rgba(2, 132, 199, 0.1);
-  --accent-secondary: #4F46E5;
-  --signal-positive: #059669;
-  --signal-warn: #D97706;
-  --signal-negative: #DC2626;
-  --grid-dot: rgba(15, 23, 42, 0.06);
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-tertiary: #6B7280;
+  --accent-primary: #0369A1;
+  --accent-primary-soft: rgba(3, 105, 161, 0.08);
+  --accent-secondary: #4338CA;
+  --signal-positive: #047857;
+  --signal-warn: #B45309;
+  --signal-negative: #B91C1C;
+  --grid-dot: rgba(17, 24, 39, 0.06);
 }
 
 .dark {
-  --bg-canvas: #090B10;
-  --bg-surface: #10141D;
-  --bg-subtle: #161C29;
-  --bg-elevated: #141A26;
-  --border-hairline: #232B3D;
+  --bg-canvas: #0B0E14;
+  --bg-surface: #111622;
+  --bg-subtle: #161D2B;
+  --border-hairline: #232C3E;
   --border-strong: #334155;
-  --text-primary: #ECEFF6;
-  --text-secondary: #9AA5BA;
-  --text-tertiary: #6D7A94;
+  --text-primary: #F1F5F9;
+  --text-secondary: #9CA8BC;
+  --text-tertiary: #73819A;
   --accent-primary: #38BDF8;
   --accent-primary-soft: rgba(56, 189, 248, 0.12);
   --accent-secondary: #818CF8;
   --signal-positive: #34D399;
   --signal-warn: #F59E0B;
   --signal-negative: #F87171;
-  --grid-dot: rgba(236, 239, 246, 0.06);
+  --grid-dot: rgba(241, 245, 249, 0.06);
 }
 
 @theme inline {
-  --font-sans: "Instrument Sans", "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Pretendard Variable", "Pretendard", "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -54,7 +53,6 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   body {
@@ -78,7 +76,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Subtle lab coordinate grid backdrop for interactive telemetry panels */
 .lab-grid-bg {
   background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
   background-size: 18px 18px;
@@ -101,7 +98,7 @@ html.dark .astro-code span {
   background-color: var(--bg-subtle) !important;
 }
 
-/* Prose refinement for technical blogs with math & tables */
+/* Prose refinement */
 .prose {
   --tw-prose-body: var(--text-primary);
   --tw-prose-headings: var(--text-primary);
@@ -117,8 +114,8 @@ html.dark .astro-code span {
   --tw-prose-code: var(--text-primary);
   --tw-prose-th-borders: var(--border-strong);
   --tw-prose-td-borders: var(--border-hairline);
-  max-width: 74ch;
-  line-height: 1.78;
+  max-width: 72ch;
+  line-height: 1.82;
 }
 
 .prose :where(h2, h3, h4) {
@@ -129,9 +126,9 @@ html.dark .astro-code span {
 .prose :where(code):not(:where(pre code)) {
   background-color: var(--bg-subtle);
   border: 1px solid var(--border-hairline);
-  border-radius: 0.3rem;
-  padding: 0.12rem 0.38rem;
-  font-size: 0.85em;
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.86em;
   font-weight: 500;
 }
 
@@ -165,7 +162,6 @@ html.dark .astro-code span {
   background-color: #FFFFFF;
 }
 
-/* KaTeX overflow safety on mobile */
 .katex-display {
   overflow-x: auto;
   overflow-y: hidden;
@@ -183,18 +179,9 @@ html.dark .astro-code span {
   font-size: 0.92rem;
 }
 
-.callout-tip {
-  border-left-color: var(--signal-positive);
-}
-
-.callout-warning,
-.callout-caution {
-  border-left-color: var(--signal-warn);
-}
-
-.callout-important {
-  border-left-color: var(--accent-secondary);
-}
+.callout-tip { border-left-color: var(--signal-positive); }
+.callout-warning, .callout-caution { border-left-color: var(--signal-warn); }
+.callout-important { border-left-color: var(--accent-secondary); }
 
 .callout-title {
   font-weight: 600;
@@ -203,9 +190,7 @@ html.dark .astro-code span {
   margin-bottom: 0.4rem;
 }
 
-.callout > :last-child {
-  margin-bottom: 0;
-}
+.callout > :last-child { margin-bottom: 0; }
 
 .code-output-table {
   margin: 1rem 0;
@@ -217,9 +202,7 @@ html.dark .astro-code span {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+  html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
